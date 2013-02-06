@@ -25,23 +25,24 @@
 		})
 	;
 	function make_FileReader (item, callback) {
-		var file = item.webkitGetAsEntry();
+		var entry = item.getAsEntry ? item.getAsEntry() : item.webkitGetAsEntry();
 		async.parallel({
 			'entry' : function (done) {
-				if (file.isFile) {
-					file.file(function(entry) {
+				if (entry.isFile) {
+					entry.file(function(entry) {
 						done(null, entry);
 					});
-				} else if (file.isDirectory) {
-					
+				} else if (entry.isDirectory) {
+					done(null, entry);
 				}
 			},
 			'path' : function (done) {
-				if (file.isFile) {
-					chrome.fileSystem.getDisplayPath(file, function(path) {
+				if (entry.isFile) {
+					chrome.fileSystem.getDisplayPath(entry, function(path) {
 						done(null, path);
 					});
-				} else if (file.isDirectory) {
+				} else if (entry.isDirectory) {
+					done(null, entry.fullPath);
 				}
 			}
 		}, callback);
@@ -66,6 +67,9 @@ $(function () {
 	})).addListener('startForwarder', function (forwarder) {
 		forwarder.addListener('serverRequest', function () {
 			$autoResponder.rules.forEach(function (rule) {
+				if (!rule.enable) {
+					return;
+				}
 				if (!this.location.pathname.match(rule.matcher)) {
 					return;
 				}
@@ -113,15 +117,15 @@ angular.module('ng').run(function () {
 	$scope.addRule = function () {
 	};
 
-	$scope.inportDnDFiles = function (files) {
+	$scope.inportDnDFiles = function (entries) {
 		$scope.$apply(function () {
-			$scope.rules = $scope.rules.concat(files.map(function (file) {
-				var matcher = file.path.match(/.+[\\\/](.+?)$/) || [];
+			$scope.rules = $scope.rules.concat(entries.map(function (entry) {
+				var matcher = entry.path.match(/.*([\\\/].+?)$/) || [];
 				return {
 					'enable' : true,
-					'matcher' : matcher.pop(),
-					'path' : file.path,
-					'file' : file
+					'matcher' : matcher.pop().replace(/\\/g, '/'),
+					'path' : entry.path,
+					'entry' : entry
 				};
 			}));
 		});
