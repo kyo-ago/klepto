@@ -152,14 +152,14 @@
 				'HTTP/1.1 200 OK',
 				'Connection: close',
 				'Content-Length: ' + fr.result.length,
-				'Content-Type: ' + param.file.entry.type,
+				'Content-Type: ' + param.file.type,
 				'Date: ' + (new Date).toUTCString(),
 				'Cache-control: private'
 			].join('\r\n');
 			this.response = new HttpResponse(header + '\r\n\r\n' + fr.result);
 			param.callback();
 		}.bind(this);
-		fr.readAsText(param.file.entry);
+		fr.readAsText(param.file);
 	};
 
 	exports[Klass.name] = Klass;

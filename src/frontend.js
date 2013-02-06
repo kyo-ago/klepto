@@ -70,22 +70,51 @@ $(function () {
 				if (!rule.enable) {
 					return;
 				}
-				if (!this.location.pathname.match(rule.matcher)) {
+				var path = this.location.pathname;
+				if (!rule.entry.isDirectory) {
+					if (!path.match(rule.matcher)) {
+						return;
+					}
+					this.stop();
+					this.createResponse({
+						'file' : rule.entry,
+						'callback' : this.switching.bind(this, 'browserWrite')
+					});
 					return;
 				}
 				this.stop();
-				this.createResponse({
-					'file' : rule.file,
-					'callback' : this.switching.bind(this, 'browserWrite')
-				});
-			}.bind(this));
+				var hit;
+				var self = this;
+				(function file_ls (entry) {
+					filer.ls(entry, function (entrys) {
+						entrys.some(function (entry) {
+							if (!path.match(entry.fullPath)) {
+								return;
+							}
+							if (!entry.isDirectory) {
+								entry.file(function (file) {
+									self.createResponse({
+										'file' : file,
+										'callback' : self.switching.bind(self, 'browserWrite')
+									});
+								});
+								hit = true;
+							} else {
+								file_ls(entry);
+							}
+							return hit;
+						});
+					});
+				})(rule.entry);			}.bind(this));
 		}.bind(forwarder)).addListener('done', function () {
 			$networkList.addLog(this);
 		}.bind(forwarder));
 	}).start();
+	window.windowClose = SocketTable.allDestroy.bind(SocketTable);
 });
 
-window.windowClose = SocketTable.allDestroy.bind(SocketTable);
+var filer = new Filer();
+filer.init();
 
 angular.module('ng').run(function () {
 	utils.loadStorage();
@@ -125,7 +154,7 @@ angular.module('ng').run(function () {
 					'enable' : true,
 					'matcher' : matcher.pop().replace(/\\/g, '/'),
 					'path' : entry.path,
-					'entry' : entry
+					'entry' : entry.entry
 				};
 			}));
 		});
