@@ -1,0 +1,23 @@
+{
+	"name": "Klepto proxy",
+	"version": "0.1",
+	"manifest_version": 2,
+	"minimum_chrome_version": "23",
+	"icons": {
+		"16": "/img/logo.png",
+		"128": "/img/logo.png"
+	},
+	"app": {
+		"background": {
+			"scripts": [
+				"/src/background.js"
+			]
+		}
+	},
+	"permissions": [
+		"experimental",
+		"storage",
+		{"fileSystem": ["write"]},
+		{"socket": ["tcp-listen", "tcp-connect"]}
+	]
+}

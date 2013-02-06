@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html ng-csp ng-app>
+<head>
+<meta charset="utf-8">
+<title>local proxy</title>
+<link rel="stylesheet" href="/css/frontend.css">
+</head>
+<body>
+
+<ul id="menu">
+<li><a href="#networkListTab">networkList</a></li>
+<li><a href="#autoResponderTab">autoResponder</a></li>
+<!-- <li><a href="#settingsTab">settings</a></li> -->
+<!-- #menu --></ul>
+
+<div id="view">
+
+<div id="networkListTab" class="tab" ng-controller="networkListCtrl">
+<div id="connectLog">
+<table>
+<tr ng-repeat="log in logs">
+<td>{{log.id}}</td>
+<td><a href="#" ng-click="showInspector(log)">{{log.url}}</a></td>
+</tr>
+</table>
+</div>
+<div id="inspector">
+<textarea id="request">{{log.requestText}}</textarea>
+<textarea id="response">{{log.responsetText}}</textarea>
+</div>
+<!-- #networkListTab --></div>
+
+<div id="autoResponderTab" class="tab" ng-controller="autoResponderCtrl">
+<table>
+<tr ng-repeat="rule in rules">
+<td><input type="checkbox" ng-model="rule.enable"></td>
+<td>{{rule.matcher}}</td>
+<td>{{rule.path}}</td>
+</tr>
+</table>
+<form ng-submit="addRule()">
+<input type="text" ng-model="matcher">
+<input type="submit" value="Save">
+</form>
+<!-- #autoResponderTab --></div>
+
+<div id="settingsTab" class="tab" ng-controller="settingCtrl">
+</div>
+
+</div>
+
+<script src="/lib/micro-location.js"></script>
+<script src="/lib/EventEmitter.js"></script>
+<script src="/lib/heir.js"></script>
+<script src="/lib/async.js"></script>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/angular.js"></script>
+<script src="/src/utils.js"></script>
+<script src="/src/proxy/SocketTable.js"></script>
+<script src="/src/proxy/Header.js"></script>
+<script src="/src/proxy/Http.js"></script>
+<script src="/src/proxy/Waterfall.js"></script>
+<script src="/src/proxy/Forwarder.js"></script>
+<script src="/src/proxy/Listener.js"></script>
+<script src="/src/frontend.js"></script>
+</body>
+</html>

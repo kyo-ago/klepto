@@ -1,0 +1,51 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+html, body {
+	height: 100%;;
+}
+table {
+	width: 100%;
+}
+#menu {
+	border: solid 1px black;
+}
+#menu li {
+	width: 50%;
+	display: inline-block;
+	border: solid 1px black;
+	margin: 0 -0.2em;
+}
+#menu label {
+	display: inline-block;
+	width: 100%;
+}
+
+#view, .tab {
+	overflow: hidden;
+	height: 90%;
+}
+
+#networkListTab > div {
+	width: 49%;
+	display: inline-block;
+	border: solid 1px black;
+	margin: 0 -0.2em;
+	height: 100%;
+}
+#networkListTab #connectLog {
+	overflow: scroll;
+}
+#networkListTab #connectLog a {
+	display: inline-block;
+	width: 100%;
+}
+#networkListTab #inspector {
+	overflow: hidden;
+}
+#networkListTab #inspector > * {
+	overflow: scroll;
+	height: 50%;
+	width: 100%;
+}
