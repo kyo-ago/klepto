@@ -6,6 +6,11 @@
 
 'use strict';
 
+Deferred.onerror = function () {
+	console.debug(arguments);
+	debugger;
+};
+
 (function () {
 	$(window)
 		.on('dragenter dragover', false)
@@ -123,48 +128,70 @@ angular.module('ng').run(function () {
 		});
 	};
 
-	$scope.responseFile = function (rule, forwarder, done) {
-		done(rule.entry);
+	$scope.responseFile = function (rule, forwarder, defer) {
+		var path = forwarder.location.pathname;
+		//last match?
+		if (path.indexOf(rule.matcher) === (path.length - 1)) {
+			defer.call(rule.entry);
+		} else {
+			defer.fail();
+		}
 	};
-	$scope.responseDirectory = function (rule, forwarder, done) {
+	$scope.responseDirectory = function (rule, forwarder, defer) {
 		/*
 		 * TODO: bug fix
 		 * Filesystem APIが非同期で実装されてるので、auto responderで設定されてるルールを上から解釈していってもどのルールに一致するか特定できない
 		 * ディレクトリマッピングが一つでも設定されている場合、一回の通信毎に全部のディレクトリの中をシーケンシャルに潜っていって（パラレルで潜ると通信毎にレスポンスが変わる可能性あるから）一致したファイルがないか確認しないといけなくて非常にコスト高そう
 		 * 先にファイル一覧持っとくとディレクトリの内容の変化に追従できない。ディレクトリの変更監視で更新を把握してもいいけど、それもそれで速度的に問題ないか不安
 		 * */
-		var hit;
-		(function file_ls (entry) {
+		var path = forwarder.location.pathname;
+		//first match?
+ 		if (path.match(rule.matcher)) {
+			defer.fail();
+			 return;
+		}
+		//replace path
+		path = path.replace(rule.matcher, entry.fullPath);
+ 		(function file_ls (entry, file_defer) {
 			filer.ls(entry, function (entrys) {
-				entrys.some(function (entry) {
-					if (!path.match(entry.fullPath)) {
-						return;
-					}
-					if (!entry.isDirectory) {
-						entry.file(done);
-						hit = true;
-					} else {
-						file_ls(entry);
-					}
-					return hit;
+				Deferred.earlier(entrys.filter(function (entry) {
+					return path.match(entry.fullPath);
+				}).map(function (entry) {
+					return Deferred.next(function () {
+						var dir_defer = Deferred();
+						if (entry.isFile && path.indexOf(entry.fullPath) === (path.length - 1)) {
+							entry.file(function (file) {
+								dir_defer.call(file);
+							});
+						} else {
+							file_ls(entry, function (file) {
+								dir_defer.call(file);
+							});
+						}
+						return dir_defer;
+					});
+				})).next(function (file) {
+					file_defer.call(file);
 				});
 			});
-		})(rule.entry);
+		})(rule.entry, function (file) {
+			 defer.call(file);
+		});
 	};
 	$scope.responseRequest = function (forwarder) {
 		forwarder.stop();
 		Deferred.earlier($scope.rules.filter(function (rule) {
-			return rule.enable && forwarder.location.pathname.match(rule.matcher);
+			return rule.enable;
 		}).map(function (rule) {
-			return function () {
+			return Deferred.next(function () {
 				var defer = Deferred();
 				if (!rule.entry.isDirectory) {
-					$scope.responseFile(rule, forwarder, defer.call.bind(defer));
+					$scope.responseFile(rule, forwarder, defer);
 				} else {
-					$scope.responseDirectory(rule, forwarder, defer.call.bind(defer));
+					$scope.responseDirectory(rule, forwarder, defer);
 				}
 				return defer;
-			};
+			});
 		})).next(function (file) {
 			forwarder.createResponse({
 				'file' : file,
