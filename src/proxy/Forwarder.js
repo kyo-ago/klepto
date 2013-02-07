@@ -114,7 +114,7 @@
 					this.response = new HttpResponse(response);
 				} else {
 					this.response.body += read_data;
-					this.response.text = this.response.text.replace(/\r\n\r\n[\s\S]+/, '\r\n\r\n' + this.response.body);
+					this.response.text = this.response.getHeaderText() + '\r\n\r\n' + this.response.body;
 				}
 				if (!this.response.isComplete()) {
 					this.serverRead(done);

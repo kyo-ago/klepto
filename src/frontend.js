@@ -101,6 +101,7 @@ angular.module('ng').run(function () {
 		$scope.log = log.log;
 		$scope.log.requestText = log.log.request.getText();
 		$scope.log.responsetText = log.log.response.getText();
+		$('#inspector textarea').prop('scrollTop', 0);
 	};
 }]).controller('autoResponderCtrl', ['$scope', function($scope) {
 	$scope.rules = [];

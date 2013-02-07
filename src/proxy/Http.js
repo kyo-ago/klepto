@@ -27,6 +27,9 @@
 	prop.getHeader = function (key) {
 		return this.head.get(key);
 	};
+	prop.getHeaderText = function () {
+		return this.head.getText();
+	};
 	prop.getText = function () {
 		return this.text || this.createText();
 	};
@@ -96,10 +99,38 @@
 	prop.Header = ResponseHeader;
 	prop.isComplete = function () {
 		var length = this.head.get('content-length') - 0;
-		if (!length) {
+		var trans = (this.head.get('transfer-encoding') || '').toLowerCase();
+		if (!length && trans !== 'chunked') {
 			return !!this.text.match('\r\n\r\n');
 		}
-		return length <= this.body.length;
+		if (length) {
+			return length <= this.body.length;
+		}
+		// trans === 'chunked'
+		return this.checkChunk(this.body);
+	};
+	prop.checkChunk = function (text) {
+		var size = 0;
+		do {
+			var size = undefined;
+			text = text.replace(/^(\w+).*\r\n/, function (all, hit) {
+				size = parseInt(hit, 16);
+				return '';
+			});
+			if (isNaN(size)) {
+				return false;
+			}
+			//done
+			if (size === 0) {
+				//^\r\n$ === no trailer, \r\n\r\n$ === trailer
+				return !!text.match(/^\r\n$|\r\n\r\n$/);
+			}
+			//2 === '\r\n'
+			text = text.substring(size + 2);
+			if (!text) {
+				return false;
+			}
+		} while (size);
 	};
 	prop.setBody = function (text) {
 		this.head.set('content-length', text.length);
