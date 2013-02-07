@@ -105,7 +105,8 @@ $(function () {
 							return hit;
 						});
 					});
-				})(rule.entry);			}.bind(this));
+				})(rule.entry);
+			}.bind(this));
 		}.bind(forwarder)).addListener('done', function () {
 			$networkList.addLog(this);
 		}.bind(forwarder));
