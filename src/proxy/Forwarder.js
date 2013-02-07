@@ -9,7 +9,6 @@
 
 	var Klass = function Forwarder (option) {
 		this.sockets = new SocketTable();
-		this.isStop = false;
 
 		this.option = utils.extend({
 			'socketId' : undefined,
@@ -55,13 +54,9 @@
 					this.browserRead(done);
 					return;
 				}
+				this.location = Location.parse(this.request.getURL());
 				done();
 			}.bind(this));
-		},
-		function createRequest (done) {
-			var url = this.request.getURL();
-			this.location = Location.parse(url);
-			done();
 		},
 		function serverRequest (done) {
 			chrome.socket.create('tcp', function (info) {
@@ -109,16 +104,20 @@
 					done();
 					return;
 				}
-				response += utils.ab2t(evn.data);
+				var read_data = utils.ab2t(evn.data);
 				if (!this.response) {
+					response += read_data;
 					if (!response.match('\r\n\r\n')) {
 						this.serverRead(done, response);
 						return;
 					}
 					this.response = new HttpResponse(response);
+				} else {
+					this.response.body += read_data;
+					this.response.text = this.response.text.replace(/\r\n\r\n[\s\S]+/, '\r\n\r\n' + this.response.body);
 				}
 				if (!this.response.isComplete()) {
-					this.serverRead(done, response);
+					this.serverRead(done);
 					return;
 				}
 				this.sockets.remove('server');
@@ -138,13 +137,18 @@
 				done();
 			}.bind(this));
 		},
-		function disconnect () {
-			this.sockets.removeAll();
-			this.emitEvent('done');
+		// calling "done" event
+		function done () {
+			this.disconnect();
 		}
 	].map(function (method) {
 		return prop[method.name] = method;
 	});
+
+	prop.disconnect = function () {
+		this.sockets.removeAll();
+		this.deferred.cancel();
+	};
 	prop.createResponse = function (param) {
 		var fr = new FileReader();
 		fr.onload = function () {

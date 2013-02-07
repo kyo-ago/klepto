@@ -9,7 +9,6 @@
 
 	var Klass = function Listener (option) {
 		this.sockets = new SocketTable();
-		this.isStop = false;
 
 		this.option = utils.extend({
 			'type' : 'tcp',
@@ -24,7 +23,6 @@
 
 	prop.methods = [
 		function listenerCreate (done) {
-			var type = this.option.type;
 			chrome.socket.create(this.option.type, function (info) {
 				this.sockets.add('listener', info.socketId);
 				done();

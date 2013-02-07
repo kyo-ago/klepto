@@ -38,8 +38,13 @@ Include libraries
 
 ---
 
-	caolan/async · GitHub https://github.com/caolan/async
-	Copyright (c) 2010 Caolan McMahon
+	@fileOverview JSDeferred
+	@author       cho45@lowreal.net
+	@version      0.4.0
+	@license
+	JSDeferred Copyright (c) 2007 cho45 ( www.lowreal.net )
+	http://github.com/cho45/jsdeferred
+	License:: MIT
 
 ---
 

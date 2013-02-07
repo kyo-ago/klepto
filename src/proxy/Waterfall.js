@@ -42,20 +42,13 @@
 	};
 	prop.waterfall = function (methods) {
 		var self = this;
-		async.waterfall(methods.map(function (method) {
-			return function () {
-				var args = [].slice.call(arguments);
-				var done = args.pop();
-				method.apply(self, args.concat(function () {
-					var args = [].slice.apply(arguments);
-					self.emitEvent(method.name, args);
-					if (!self.isStop) {
-						done.apply(self, [null].concat(args));
-					}
-					self.isStop = false;
-				}));
-			};
-		}));
+		self.deferred = Deferred.loop(methods.length, function (num) {
+			var method = methods[num];
+			var defer = Deferred();
+			self.emitEvent(method.name);
+			method.call(self, defer.call.bind(defer));
+			return defer;
+		});
 		return this;
 	};
 	prop.switching = function (method) {
@@ -64,7 +57,7 @@
 		return this;
 	};
 	prop.stop = function () {
-		this.isStop = true;
+		this.deferred.cancel();
 		return this;
 	};
 

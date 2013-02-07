@@ -15,39 +15,43 @@
 				return;
 			}
 			evn.preventDefault();
-			async.parallel(
+			Deferred.parallel(
 				[].slice.apply(dt.items).map(function (item) {
-					return function (callback) {
-						make_FileReader(item, callback);
+					return function () {
+						var defer = Deferred();
+						make_FileReader(item, defer.call.bind(defer));
+						return defer;
 					};
-				}), result_FileReader
-			);
+				})
+			).next(result_FileReader);
 		})
 	;
 	function make_FileReader (item, callback) {
 		var entry = item.getAsEntry ? item.getAsEntry() : item.webkitGetAsEntry();
-		async.parallel({
-			'entry' : function (done) {
-				if (entry.isFile) {
-					entry.file(function(entry) {
-						done(null, entry);
-					});
-				} else if (entry.isDirectory) {
-					done(null, entry);
+		Deferred.parallel({
+			'entry' : function () {
+				if (entry.isDirectory) {
+					return entry;
 				}
+				var defer = Deferred();
+				entry.file(function(entry) {
+					defer.call(entry);
+				});
+				return defer;
 			},
-			'path' : function (done) {
-				if (entry.isFile) {
-					chrome.fileSystem.getDisplayPath(entry, function(path) {
-						done(null, path);
-					});
-				} else if (entry.isDirectory) {
-					done(null, entry.fullPath);
+			'path' : function () {
+				if (entry.isDirectory) {
+					return entry.fullPath;
 				}
+				var defer = Deferred();
+				chrome.fileSystem.getDisplayPath(entry, function(path) {
+					defer.call(path);
+				});
+				return defer;
 			}
-		}, callback);
+		}).next(callback);
 	}
-	function result_FileReader (err, res) {
+	function result_FileReader (res) {
 		$('[href="#autoResponderTab"]').click();
 		var $scope = angular.element('#autoResponderTab').scope();
 		$scope.inportDnDFiles(res);
@@ -66,47 +70,7 @@ $(function () {
 		'port' : 24888
 	})).addListener('startForwarder', function (forwarder) {
 		forwarder.addListener('serverRequest', function () {
-			$autoResponder.rules.forEach(function (rule) {
-				if (!rule.enable) {
-					return;
-				}
-				var path = this.location.pathname;
-				if (!rule.entry.isDirectory) {
-					if (!path.match(rule.matcher)) {
-						return;
-					}
-					this.stop();
-					this.createResponse({
-						'file' : rule.entry,
-						'callback' : this.switching.bind(this, 'browserWrite')
-					});
-					return;
-				}
-				this.stop();
-				var hit;
-				var self = this;
-				(function file_ls (entry) {
-					filer.ls(entry, function (entrys) {
-						entrys.some(function (entry) {
-							if (!path.match(entry.fullPath)) {
-								return;
-							}
-							if (!entry.isDirectory) {
-								entry.file(function (file) {
-									self.createResponse({
-										'file' : file,
-										'callback' : self.switching.bind(self, 'browserWrite')
-									});
-								});
-								hit = true;
-							} else {
-								file_ls(entry);
-							}
-							return hit;
-						});
-					});
-				})(rule.entry);
-			}.bind(this));
+			$autoResponder.responseRequest(this);
 		}.bind(forwarder)).addListener('done', function () {
 			$networkList.addLog(this);
 		}.bind(forwarder));
@@ -124,9 +88,6 @@ angular.module('ng').run(function () {
 	$scope.logs = [];
 
 	$scope.addLog = function (log) {
-		if (!log) {
-			return;
-		}
 		$scope.$apply(function() {
 			$scope.logs.unshift({
 				'id' : $scope.logs.length + 1,
@@ -158,6 +119,56 @@ angular.module('ng').run(function () {
 					'entry' : entry.entry
 				};
 			}));
+		});
+	};
+
+	$scope.responseFile = function (rule, forwarder, done) {
+		done(rule.entry);
+	};
+	$scope.responseDirectory = function (rule, forwarder, done) {
+		/*
+		 * TODO: bug fix
+		 * Filesystem APIが非同期で実装されてるので、auto responderで設定されてるルールを上から解釈していってもどのルールに一致するか特定できない
+		 * ディレクトリマッピングが一つでも設定されている場合、一回の通信毎に全部のディレクトリの中をシーケンシャルに潜っていって（パラレルで潜ると通信毎にレスポンスが変わる可能性あるから）一致したファイルがないか確認しないといけなくて非常にコスト高そう
+		 * 先にファイル一覧持っとくとディレクトリの内容の変化に追従できない。ディレクトリの変更監視で更新を把握してもいいけど、それもそれで速度的に問題ないか不安
+		 * */
+		var hit;
+		(function file_ls (entry) {
+			filer.ls(entry, function (entrys) {
+				entrys.some(function (entry) {
+					if (!path.match(entry.fullPath)) {
+						return;
+					}
+					if (!entry.isDirectory) {
+						entry.file(done);
+						hit = true;
+					} else {
+						file_ls(entry);
+					}
+					return hit;
+				});
+			});
+		})(rule.entry);
+	};
+	$scope.responseRequest = function (forwarder) {
+		forwarder.stop();
+		Deferred.earlier($scope.rules.filter(function (rule) {
+			return rule.enable && forwarder.location.pathname.match(rule.matcher);
+		}).map(function (rule) {
+			return function () {
+				var defer = Deferred();
+				if (!rule.entry.isDirectory) {
+					$scope.responseFile(rule, forwarder, defer.call.bind(defer));
+				} else {
+					$scope.responseDirectory(rule, forwarder, defer.call.bind(defer));
+				}
+				return defer;
+			};
+		})).next(function (file) {
+			forwarder.createResponse({
+				'file' : file,
+				'callback' : forwarder.switching.bind(forwarder, 'browserWrite')
+			});
 		});
 	};
 }]).controller('settingCtrl', ['$scope', function($scope) {	

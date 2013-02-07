@@ -61,9 +61,9 @@
 		return this.head.getURL();
 	};
 	prop.isComplete = function () {
-		var method = this.head.getMethod();
+		var method = this.head.getMethod().toLowerCase();
 		if (method === 'post') {
-			var length = this.head.get('content-length');
+			var length = this.head.get('content-length') - 0;
 			return length <= this.body.length;
 		}
 		return !!this.text.match('\r\n\r\n');
@@ -95,7 +95,7 @@
 
 	prop.Header = ResponseHeader;
 	prop.isComplete = function () {
-		var length = this.head.get('content-length');
+		var length = this.head.get('content-length') - 0;
 		if (!length) {
 			return !!this.text.match('\r\n\r\n');
 		}
