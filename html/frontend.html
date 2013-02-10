@@ -10,7 +10,7 @@
 <ul id="menu">
 <li><a href="#networkListTab">networkList</a></li>
 <li><a href="#autoResponderTab">autoResponder</a></li>
-<!-- <li><a href="#settingsTab">settings</a></li> -->
+<li><a href="#settingsTab">settings</a></li>
 <!-- #menu --></ul>
 
 <div id="view">
@@ -45,6 +45,11 @@
 <!-- #autoResponderTab --></div>
 
 <div id="settingsTab" class="tab" ng-controller="settingCtrl">
+<form ng-submit="applySetting()">
+Listen Port<input type="text" ng-model="port"><br>
+Listen Address<input type="text" ng-model="address"><br>
+<input type="submit" value="Save">
+</form>
 </div>
 
 </div>
@@ -64,6 +69,9 @@
 <script src="/src/proxy/Waterfall.js"></script>
 <script src="/src/proxy/Forwarder.js"></script>
 <script src="/src/proxy/Listener.js"></script>
+<script src="/src/app/autoResponder.js"></script>
+<script src="/src/app/networkList.js"></script>
+<script src="/src/app/setting.js"></script>
 <script src="/src/frontend.js"></script>
 </body>
 </html>

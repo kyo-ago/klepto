@@ -12,23 +12,35 @@ Deferred.onerror = function () {
 };
 
 var filer = new Filer();
-Deferred.parallel([$, filer.init.bind(filer)]).next(function () {
+var appEvents = new EventEmitter();
+Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)].map(function (func) {
+	var defer = Deferred();
+	func(function () {
+		defer.call();
+	});
+	return defer;
+})).next(function () {
 	$('#menu a').on('click', function () {
 		$($(this).attr('href')).show().siblings().hide();
 	}).first().click();
+	utils.storage = utils.storage || {};
+	utils.storage.settings = utils.storage.settings || {
+		'address' : '0.0.0.0',
+		'port' : 24888
+	};
 
 	var $autoResponder = angular.element('#autoResponderTab').scope();
 	var $networkList = angular.element('#networkListTab').scope();
 	(new Listener({
-		'address' : '0.0.0.0',
-		'port' : 24888
+		'address' : utils.storage.settings.address || '0.0.0.0',
+		'port' : (utils.storage.settings.port - 0) || 24888
 	})).addListener('startForwarder', function (forwarder) {
-			forwarder.addListener('serverRequest', function () {
-					$autoResponder.responseRequest(this);
-				}.bind(forwarder)).addListener('done', function () {
-					$networkList.addLog(this);
-				}.bind(forwarder));
-		}).start();
+		forwarder.addListener('serverRequest', function () {
+			$autoResponder.responseRequest(this);
+		}.bind(forwarder)).addListener('done', function () {
+			$networkList.addLog(this);
+		}.bind(forwarder));
+	}).start();
 
 	$(window)
 		.on('dragenter dragover', false)
@@ -46,62 +58,20 @@ Deferred.parallel([$, filer.init.bind(filer)]).next(function () {
 	;
 
 	window.windowClose = SocketTable.allDestroy.bind(SocketTable);
+}).next(function () {
+	appEvents.emitEvent('init');
+	var addListener = appEvents.addListener;
+	appEvents.addListener = function (evt, listener) {
+		if (evt === 'init') {
+			listener();
+			return this;
+		}
+		addListener.apply(this, arguments);
+	};
 });
 
-angular.module('ng').run(function () {
-	utils.loadStorage();
-}).controller('networkListCtrl', ['$scope', function($scope) {
-	$scope.log = {};
-	$scope.logs = [];
-
-	$scope.addLog = function (log) {
-		$scope.$apply(function() {
-			$scope.logs.unshift({
-				'id' : $scope.logs.length + 1,
-				'url' : log.location.href,
-				'log' : log
-			});
-		});
-	};
-
-	$scope.showInspector = function (log) {
-		$scope.log = log.log;
-		$scope.log.requestText = log.log.request.getText();
-		$scope.log.responsetText = log.log.response.getText();
-		$('#inspector textarea').prop('scrollTop', 0);
-	};
-}]).controller('autoResponderCtrl', ['$scope', function($scope) {
-	$scope.rules = [];
-
-	$scope.addRule = function () {
-	};
-
-	$scope.inportDnDFiles = function (entries) {
-		Deferred.parallel(entries.map(function (entry) {
-			var klass = entry.isDirectory ? ResponseDirectory : ResponseFile;
-			return (new klass(entry, filer)).load(function () {
-				this.setRule(this.entry);
-			});
-		})).next(function (rules) {
-			$scope.$apply(function () {
-				$scope.rules = $scope.rules.concat(rules);
-			});
-		});
-	};
-
-	$scope.responseRequest = function (forwarder) {
-		$scope.rules.filter(function (rule) {
-			return rule.enable;
-		}).some(function (rule) {
-			var forw = forwarder;
-			return rule.isMatch(forw.location.pathname, function (match) {
-				forw.stop();
-				rule.readFile(match)
-					.next(forw.setResponse.bind(forw))
-					.next(forw.switching.bind(forw, 'browserWrite'))
-				;
-			});
-		});
-	};
-}]).controller('settingCtrl', ['$scope', function($scope) {
-}]);
+angular.module('ng')
+	.controller('networkListCtrl', ['$scope', networkList])
+	.controller('autoResponderCtrl', ['$scope', autoResponder])
+	.controller('settingCtrl', ['$scope', setting])
+;

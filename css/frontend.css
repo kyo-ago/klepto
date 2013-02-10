@@ -12,10 +12,13 @@ table {
 	border: solid 1px black;
 }
 #menu li {
-	width: 50%;
+	width: 33%;
 	display: inline-block;
 	border: solid 1px black;
 	margin: 0 -0.2em;
+}
+#menu li:last-child {
+	width: 32%;
 }
 #menu label {
 	display: inline-block;

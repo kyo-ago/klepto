@@ -7,7 +7,7 @@
 'use strict';
 
 var frontend;
-chrome.app.runtime.onLaunched.addListener(function() {
+var onLaunched = function () {
 	if (frontend) {
 		frontend.focus();
 		return;
@@ -21,16 +21,16 @@ chrome.app.runtime.onLaunched.addListener(function() {
 		'hidden' : true
 	}, function(win) {
 		frontend = win;
-/* This code does not work.
-		frontend.onClosed.addListener(function () {
-			frontend.contentWindow.windowClose();
-			frontend = undefined;
-		});
-		frontend.contentWindow.document.addEventListenr('DOMContentLoaded', function () {
-			frontend.focus();
-			frontend.show();
-		});
-*/
+		/* This code does not work.
+		 frontend.onClosed.addListener(function () {
+		 frontend.contentWindow.windowClose();
+		 frontend = undefined;
+		 });
+		 frontend.contentWindow.document.addEventListenr('DOMContentLoaded', function () {
+		 frontend.focus();
+		 frontend.show();
+		 });
+		 */
 		var sockets = {};
 		var win_interval = setInterval(function () {
 			if (!frontend.contentWindow.closed) {
@@ -40,16 +40,25 @@ chrome.app.runtime.onLaunched.addListener(function() {
 				chrome.socket.disconnect(sid-0);
 				chrome.socket.destroy(sid-0);
 			});
+			var isReload = frontend.toReload;
 			frontend = undefined;
 			clearInterval(win_interval);
+			if (isReload) {
+				onLaunched();
+			}
 		}, 500);
 		var dom_interval = setInterval(function () {
 			if (!frontend.contentWindow.windowClose) {
 				return;
 			}
+			frontend.contentWindow.windowReload = function () {
+				frontend.toReload = true;
+				frontend.close();
+			};
 			sockets = frontend.contentWindow.SocketTable.sockets;
 			frontend.show();
 			clearInterval(dom_interval);
 		});
 	});
-});
+};
+chrome.app.runtime.onLaunched.addListener(onLaunched);

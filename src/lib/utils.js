@@ -53,7 +53,7 @@ utils.loadStorage = function (callback) {
 		if (chrome.runtime.lastError) {
 			alert(chrome.extension.lastError);
 		}
-		this.storage = storage;
+		this.storage = storage || {};
 		callback && callback();
 	}.bind(this));
 };
