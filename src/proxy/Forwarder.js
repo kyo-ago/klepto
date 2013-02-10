@@ -149,21 +149,17 @@
 		this.sockets.removeAll();
 		this.deferred.cancel();
 	};
-	prop.createResponse = function (param) {
-		var fr = new FileReader();
-		fr.onload = function () {
-			var header = [
-				'HTTP/1.1 200 OK',
-				'Connection: close',
-				'Content-Length: ' + fr.result.length,
-				'Content-Type: ' + param.file.type,
-				'Date: ' + (new Date).toUTCString(),
-				'Cache-control: private'
-			].join('\r\n');
-			this.response = new HttpResponse(header + '\r\n\r\n' + fr.result);
-			param.callback();
-		}.bind(this);
-		fr.readAsText(param.file);
+	prop.setResponse = function (data, type) {
+		var header = [
+			'HTTP/1.1 200 OK',
+			'Connection: close',
+			'Content-Length: ' + data.length,
+			'Content-Type: ' + type,
+			'Date: ' + (new Date).toUTCString(),
+			'Cache-control: private'
+		].join('\r\n');
+		this.response = new HttpResponse(header + '\r\n\r\n' + data);
+		return this;
 	};
 
 	exports[Klass.name] = Klass;

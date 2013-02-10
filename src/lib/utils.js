@@ -57,3 +57,27 @@ utils.loadStorage = function (callback) {
 		callback && callback();
 	}.bind(this));
 };
+
+Filer.prototype.dir = function (entry, callback, result) {
+	var self = this;
+	result = result || {};
+
+	var defer = Deferred();
+	this.ls(entry, function (entries) {
+		defer.call(entries);
+	});
+	defer.next(function (entries) {
+		var defer = Deferred();
+		Deferred.parallel(entries.filter(function (entry) {
+			result[entry.fullPath] = entry;
+			return entry.isDirectory;
+		}).map(function (entry) {
+			var defer = Deferred();
+			self.dir(entry, defer.call.bind(defer), result);
+			return defer;
+		})).next(defer.call.bind(defer));
+		return defer;
+	}).next(function () {
+		callback.call(self, result);
+	});
+};

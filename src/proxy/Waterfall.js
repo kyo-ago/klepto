@@ -7,7 +7,10 @@
 (function (exports) {
 	'use strict';
 
-	var Klass = function Waterfall () {};
+	var Klass = function Waterfall () {
+		// this is not execute.(overwrite child class)
+		this.isStop = false;
+	};
 	Klass.inherit(EventEmitter);
 	var prop = Klass.prototype;
 
@@ -43,12 +46,21 @@
 	prop.waterfall = function (methods) {
 		var self = this;
 		self.deferred = Deferred.loop(methods.length, function (num) {
+			if (self.isStop) {
+				self.isStop = false;
+				var onerror = Deferred.onerror;
+				Deferred.onerror = function () {};
+				setTimeout(function () {
+					Deferred.onerror = onerror;
+				});
+				throw 'stop';
+			}
 			var method = methods[num];
 			var defer = Deferred();
 			self.emitEvent(method.name);
 			method.call(self, defer.call.bind(defer));
 			return defer;
-		});
+		}.bind(this));
 		return this;
 	};
 	prop.switching = function (method) {
@@ -57,7 +69,7 @@
 		return this;
 	};
 	prop.stop = function () {
-		this.deferred.cancel();
+		this.isStop = true;
 		return this;
 	};
 
