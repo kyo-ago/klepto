@@ -50,7 +50,7 @@
 				self.isStop = false;
 				var onerror = Deferred.onerror;
 				Deferred.onerror = function () {};
-				setTimeout(function () {
+				Deferred.next(function () {
 					Deferred.onerror = onerror;
 				});
 				throw 'stop';

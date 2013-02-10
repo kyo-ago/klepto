@@ -22,7 +22,10 @@
 		var fr = new FileReader();
 		var defer = Deferred();
 		fr.onload = function () {
-			defer.call(fr.result, file.type);
+			defer.call({
+				'data' : fr.result,
+				'type' : file.type
+			});
 		}.bind(this);
 		fr.readAsText(file);
 		return defer;
@@ -87,16 +90,16 @@
 		return defer;
 	};
 	prop.isMatch = function (path, callback) {
-		if (!this.isPathMatch(path)) {
+		if (!path.match(this.matcher)) {
 			return false;
 		}
-		path = path.replace(rule.matcher, this.entry.fullPath);
+		path = path.replace(this.matcher, this.entry.fullPath);
 		return Object.keys(this.map).some(function (key) {
 			if (this.map[key].isDirectory) {
 				return false;
 			}
 			if (this.isPathMatch(path, key)) {
-				callback(this.map[key]);
+				this.map[key].file(callback);
 				return true;
 			}
 			return false;

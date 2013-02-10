@@ -149,16 +149,16 @@
 		this.sockets.removeAll();
 		this.deferred.cancel();
 	};
-	prop.setResponse = function (data, type) {
+	prop.setResponse = function (file) {
 		var header = [
 			'HTTP/1.1 200 OK',
 			'Connection: close',
-			'Content-Length: ' + data.length,
-			'Content-Type: ' + type,
+			'Content-Length: ' + file.data.length,
+			'Content-Type: ' + file.type,
 			'Date: ' + (new Date).toUTCString(),
 			'Cache-control: private'
 		].join('\r\n');
-		this.response = new HttpResponse(header + '\r\n\r\n' + data);
+		this.response = new HttpResponse(header + '\r\n\r\n' + file.data);
 		return this;
 	};
 
