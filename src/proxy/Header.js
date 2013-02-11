@@ -37,10 +37,10 @@
 		Object.keys(this.fields).forEach(function (key) {
 			headers.push(key + ': ' + this.fields[key]);
 		}.bind(this));
-		this.text = this.createLine() + '\r\n' + headers.join('\r\n');
+		this.text = this.getLine() + '\r\n' + headers.join('\r\n');
 		return this.text;
 	};
-	prop.createLine = function () {};
+	prop.getLine = function () {};
 	prop.set = function (key, val) {
 		this.fields[key.toLowerCase()] = val;
 		delete this.text;
@@ -81,7 +81,7 @@
 		}
 		return uri;
 	};
-	prop.createLine = function () {
+	prop.getLine = function () {
 		return [this.method, this.uri, this.version].join(' ');
 	};
 
@@ -110,7 +110,7 @@
 		this.message = param[2];
 		return this;
 	};
-	prop.createLine = function () {
+	prop.getLine = function () {
 		return [this.version, this.status, this.message].join(' ');
 	};
 

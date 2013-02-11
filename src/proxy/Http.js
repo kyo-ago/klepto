@@ -16,7 +16,7 @@
 	var prop = Klass.prototype;
 
 	prop.parse = function (text) {
-		var split = text.split(/\r\n\r\n/);
+		var split = text.split('\r\n\r\n');
 		var head = (new this.Header).parse(split.shift());
 		var body = split.join('\r\n\r\n');
 		return {
