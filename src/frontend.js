@@ -73,5 +73,5 @@ Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)]
 angular.module('ng')
 	.controller('networkListCtrl', ['$scope', networkList])
 	.controller('autoResponderCtrl', ['$scope', autoResponder])
-	.controller('settingCtrl', ['$scope', setting])
+	.controller('settingsCtrl', ['$scope', settings])
 ;
