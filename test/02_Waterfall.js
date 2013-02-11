@@ -40,12 +40,10 @@ describe('Waterfall', function () {
 			var event = sinon.spy();
 			waterfall.addListener(method.name, event);
 			var defer = waterfall.waterfall_loop(method);
-			expect(event.called).to.eql(true);
-			expect(method.called).to.eql(true);
+			expect(event.called).to.be.true;
+			expect(method.called).to.be.true;
 			expect(defer).to.be.an.instanceof(Deferred);
-			defer.next(function () {
-				done();
-			});
+			defer.next(done);
 			method.args[0][0]();
 		});
 	});
