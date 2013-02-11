@@ -60,7 +60,7 @@
 	var prop = Klass.prototype;
 
 	prop.Header = RequestHeader;
-	prop.getURL = function () {
+	prop.getURL = prop.getURI = function () {
 		return this.head.getURL();
 	};
 	prop.isComplete = function () {
@@ -108,6 +108,9 @@
 		}
 		// trans === 'chunked'
 		return this.checkChunk(this.body);
+	};
+	prop.getBodyText = function () {
+		return this.body;
 	};
 	prop.checkChunk = function (text) {
 		var size = 0;

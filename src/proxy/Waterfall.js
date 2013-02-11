@@ -18,7 +18,6 @@
 	prop.start = function () {
 		this.addListener('error', function (error) {
 			console.debug(arguments);
-			debugger;
 			this.sockets.removeAll();
 			throw new Error(error);
 		}.bind(this));

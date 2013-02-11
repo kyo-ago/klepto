@@ -8,7 +8,6 @@
 
 Deferred.onerror = function () {
 	console.debug(arguments);
-	debugger;
 };
 
 var filer = new Filer();
