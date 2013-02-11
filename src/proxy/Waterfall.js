@@ -44,24 +44,29 @@
 		return results;
 	};
 	prop.waterfall = function (methods) {
-		var self = this;
-		self.deferred = Deferred.loop(methods.length, function (num) {
-			if (self.isStop) {
-				self.isStop = false;
-				var onerror = Deferred.onerror;
-				Deferred.onerror = function () {};
-				Deferred.next(function () {
-					Deferred.onerror = onerror;
-				});
-				throw 'stop';
-			}
-			var method = methods[num];
-			var defer = Deferred();
-			self.emitEvent(method.name);
-			method.call(self, defer.call.bind(defer));
-			return defer;
+		this.deferred = Deferred.loop(methods.length, function (num) {
+			var isStop = this.isStop;
+			this.isStop = false;
+			return isStop
+				? this.waterfall_stop()
+				: this.waterfall_loop(methods[num])
+			;
 		}.bind(this));
 		return this;
+	};
+	prop.waterfall_loop = function (method) {
+		var defer = Deferred();
+		this.emitEvent(method.name);
+		method.call(this, defer.call.bind(defer));
+		return defer;
+	};
+	prop.waterfall_stop = function () {
+		var onerror = Deferred.onerror;
+		Deferred.onerror = function () {};
+		Deferred.next(function () {
+			Deferred.onerror = onerror;
+		});
+		throw 'stop';
 	};
 	prop.switching = function (method) {
 		var methods = this.getMethods(method);

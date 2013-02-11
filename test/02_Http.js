@@ -4,14 +4,14 @@
  * License: GPL
  */
 
-describe('HttpRequest', function(){
-	describe('base', function(){
-		it('exist', function(){
+describe('HttpRequest', function () {
+	describe('base', function () {
+		it('exist', function () {
 			expect(HttpRequest).to.be.an('Function');
 		});
 	});
-	describe('instance', function(){
-		it('parse', function(){
+	describe('instance', function () {
+		it('parse', function () {
 			var text = [
 				'GET / HTTP/1.1',
 				'Host: www.example.com',
@@ -28,14 +28,14 @@ describe('HttpRequest', function(){
 	});
 });
 
-describe('HttpResponse', function(){
-	describe('base', function(){
-		it('exist', function(){
+describe('HttpResponse', function () {
+	describe('base', function () {
+		it('exist', function () {
 			expect(HttpResponse).to.be.an('Function');
 		});
 	});
-	describe('instance', function(){
-		it('parse', function(){
+	describe('instance', function () {
+		it('parse', function () {
 			var text = [
 				'HTTP/1.1 200 OK',
 				'Content-Encoding: gzip',

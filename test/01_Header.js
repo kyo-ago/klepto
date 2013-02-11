@@ -4,20 +4,20 @@
  * License: GPL
  */
 
-describe('RequestHeader', function(){
-	describe('base', function(){
-		it('exist', function(){
+describe('RequestHeader', function () {
+	describe('base', function () {
+		it('exist', function () {
 			expect(RequestHeader).to.be.an('Function');
 		});
-		it('new', function(){
+		it('new', function () {
 			var header = new RequestHeader();
 			expect(header).to.be.an('Object');
 			expect(header).to.be.an.instanceof(RequestHeader);
 		});
 	});
-	describe('instance', function(){
+	describe('instance', function () {
 		var header = new RequestHeader();
-		it('parse', function(){
+		it('parse', function () {
 			var text = [
 				'GET / HTTP/1.1',
 				'Host: www.example.com',
@@ -39,20 +39,20 @@ describe('RequestHeader', function(){
 	});
 });
 
-describe('ResponseHeader', function(){
-	describe('base', function(){
-		it('exist', function(){
+describe('ResponseHeader', function () {
+	describe('base', function () {
+		it('exist', function () {
 			expect(ResponseHeader).to.be.an('Function');
 		});
-		it('new', function(){
+		it('new', function () {
 			var header = new ResponseHeader();
 			expect(header).to.be.an('Object');
 			expect(header).to.be.an.instanceof(ResponseHeader);
 		});
 	});
-	describe('instance', function(){
+	describe('instance', function () {
 		var header = new ResponseHeader();
-		it('parse', function(){
+		it('parse', function () {
 			var text = [
 				'HTTP/1.1 200 OK',
 				'Date: Mon, 11 Feb 2013 08:31:14 GMT',
