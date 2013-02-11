@@ -23,6 +23,20 @@ utils.t2ab = function (string) {
 	}
 	return result;
 };
+utils.t2u8 = function (string) {
+	var array = new Uint8Array(string.length);
+	for (var i = 0, l = string.length; i < l; ++i) {
+		array[i] = string.charCodeAt(i);
+	}
+	return array;
+};
+utils.u82t = function (array) {
+	var result = '';
+	for (var i = 0, l = array.length; i < l; ++i) {
+		result = result + String.fromCharCode(array[i]);
+	}
+	return result;
+};
 utils.extend = function () {
 	var args = Array.prototype.slice.call(arguments);
 	var result = {};

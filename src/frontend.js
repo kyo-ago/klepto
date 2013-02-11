@@ -20,7 +20,11 @@ Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)]
 	return defer;
 })).next(function () {
 	$('#menu a').on('click', function () {
-		$($(this).attr('href')).show().siblings().hide();
+		var elem = angular.element($(this).attr('href'));
+		elem.show().siblings().hide().each(function () {
+			angular.element(this).scope().event.emitEvent('hidden');
+		});
+		elem.scope().event.emitEvent('visible');
 	}).first().click();
 	utils.storage = utils.storage || {};
 	utils.storage.settings = utils.storage.settings || {

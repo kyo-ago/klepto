@@ -5,6 +5,7 @@
  */
 
 var autoResponder = function ($scope) {
+	$scope.event = new EventEmitter();
 	$scope.rules = [];
 
 	$scope.addRule = function () {

@@ -5,6 +5,7 @@
  */
 
 var settings = function ($scope) {
+	$scope.event = new EventEmitter();
 	appEvents.addListener('init', function () {
 		$scope.$apply(function () {
 			$scope.address = utils.storage.settings.address;

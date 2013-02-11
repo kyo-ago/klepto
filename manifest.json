@@ -17,6 +17,7 @@
 	"permissions": [
 		"experimental",
 		"storage",
+		"contextMenus",
 		{"fileSystem": ["write"]},
 		{"socket": ["tcp-listen", "tcp-connect"]}
 	]
