@@ -16,6 +16,7 @@
 			chrome.socket.disconnect(sid-0);
 			chrome.socket.destroy(sid-0);
 		});
+		Klass.sockets = {};
 	};
 	var prop = Klass.prototype;
 
@@ -37,7 +38,7 @@
 		chrome.socket.disconnect(sid);
 		chrome.socket.destroy(sid);
 		delete this.sockets[key];
-		delete Klass.sockets[key];
+		delete Klass.sockets[sid];
 	};
 	prop.removeAll = function () {
 		Object.keys(this.sockets).forEach(this.remove.bind(this));
