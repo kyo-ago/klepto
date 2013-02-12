@@ -10,7 +10,7 @@ var networkList = function ($scope) {
 	$scope.logs = [];
 	$scope.contextmenu_id = undefined;
 	var TRUNCATE_CHARACTERS_SIZE = 128;
-	var TRUNCATE_TEXT = '*** Klepto: truncated at ' + TRUNCATE_CHARACTERS_SIZE + ' characters. TODO: Right-click to disable truncation. ***';
+	var TRUNCATE_TEXT = '*** Klepto: truncated at ' + TRUNCATE_CHARACTERS_SIZE + ' characters. ***';
 
 	$scope.addLog = function (log) {
 		$scope.$apply(function() {

@@ -30,7 +30,7 @@ Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)]
 	utils.storage.settings = utils.extend({
 		'address' : '0.0.0.0',
 		'port' : 24888,
-		'decode_gzip' : false
+		'decode_gzip' : true
 	}, utils.storage.settings);
 
 	var $autoResponder = angular.element('#autoResponderTab').scope();
