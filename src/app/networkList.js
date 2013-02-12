@@ -29,7 +29,7 @@ var networkList = function ($scope) {
 			return;
 		}
 		log.requestText = log.request.getText();
-		log.responsetText = log.response.getText();
+		log.responsetText = utils.decodeUtf8(utils.t2bs(log.response.getText()));
 		$('#inspector textarea').prop('scrollTop', 0);
 		$scope.setTruncateData();
 	};
@@ -38,7 +38,7 @@ var networkList = function ($scope) {
 		if (log.response.getHeader('content-encoding') !== 'gzip') {
 			return;
 		}
-		var body = log.response.getBodyText();
+		var body = utils.decodeUtf8(utils.t2bs(log.response.getBodyText()));
 		if (body.length < TRUNCATE_CHARACTERS_SIZE) {
 			return;
 		}
@@ -70,7 +70,7 @@ var networkList = function ($scope) {
 		$scope.removeContextMenus();
 		var body = log.response.getBodyText();
 		var gunzip = new Zlib.Gunzip(utils.t2u8(body));
-		log.responsetText = log.response.getHeaderText() + '\r\n\r\n' + utils.u82t(gunzip.decompress());
+		log.responsetText = log.response.getHeaderText() + '\r\n\r\n' + utils.decodeUtf8(utils.u82t(gunzip.decompress()));
 		$scope.$apply();
 	});
 	$scope.removeContextMenus = function () {
