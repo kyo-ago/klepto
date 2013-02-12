@@ -70,6 +70,7 @@
 			var loc = this.location;
 			var host = loc.hostname;
 			var port = loc.port || 80;
+			//TODO:support CONNECT method
 			if (!host) {
 				return;
 			}

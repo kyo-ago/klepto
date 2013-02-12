@@ -28,25 +28,34 @@ var networkList = function ($scope) {
 		if (log.constructor === Object) {
 			return;
 		}
-		log.requestText = log.request.getText();
-		log.responsetText = utils.decodeUtf8(utils.t2bs(log.response.getText()));
 		$('#inspector textarea').prop('scrollTop', 0);
-		$scope.setTruncateData();
-	};
-	$scope.setTruncateData = function () {
-		var log = $scope.log;
+		log.requestText = log.request.getText();
 		if (log.response.getHeader('content-encoding') !== 'gzip') {
+			log.responsetText = utils.decodeUtf8(utils.t2bs(log.response.getText()));
 			return;
 		}
-		var body = utils.decodeUtf8(utils.t2bs(log.response.getBodyText()));
-		if (body.length < TRUNCATE_CHARACTERS_SIZE) {
-			return;
+		$scope.setDecodeData();
+	};
+	$scope.setDecodeData = function () {
+		var log = $scope.log;
+		var header = log.response.getHeaderText();
+		var body = log.response.getBodyText();
+		var size = TRUNCATE_CHARACTERS_SIZE;
+		var gunzip;
+		if (!utils.storage.settings.decode_gzip && body.length > size) {
+			body = body.substring(0, size) + '\r\n' + TRUNCATE_TEXT
+		} else {
+			gunzip = new Zlib.Gunzip(utils.t2u8(body));
+			body = utils.decodeUtf8(utils.u82t(gunzip.decompress()));
 		}
-		log.responsetText = log.response.getHeaderText() + '\r\n\r\n' + body.substring(0, TRUNCATE_CHARACTERS_SIZE) + '\r\n' + TRUNCATE_TEXT;
+		log.responsetText = header + '\r\n\r\n' + body;
 	};
 
 	$('#networkListTab #inspector #response').on('contextmenu', function () {
 		var log = $scope.log;
+		if (utils.storage.settings.decode_gzip) {
+			return;
+		}
 		if (log.constructor === Object) {
 			return;
 		}
