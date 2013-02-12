@@ -16,9 +16,10 @@ table {
 	display: inline-block;
 	border: solid 1px black;
 	margin: 0 -0.2em;
+	text-align: center;
 }
 #menu li:last-child {
-	width: 32%;
+	width: 34%;
 }
 #menu label {
 	display: inline-block;
@@ -31,7 +32,7 @@ table {
 }
 
 #networkListTab > div {
-	width: 49%;
+	width: 50%;
 	display: inline-block;
 	border: solid 1px black;
 	margin: 0 -0.2em;
