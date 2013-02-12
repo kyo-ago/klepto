@@ -27,10 +27,11 @@ Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)]
 		elem.scope().event.emitEvent('visible');
 	}).first().click();
 	utils.storage = utils.storage || {};
-	utils.storage.settings = utils.storage.settings || {
+	utils.storage.settings = utils.extend({
 		'address' : '0.0.0.0',
-		'port' : 24888
-	};
+		'port' : 24888,
+		'decode_gzip' : false
+	}, utils.storage.settings);
 
 	var $autoResponder = angular.element('#autoResponderTab').scope();
 	var $networkList = angular.element('#networkListTab').scope();

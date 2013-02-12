@@ -70,6 +70,9 @@
 			var loc = this.location;
 			var host = loc.hostname;
 			var port = loc.port || 80;
+			if (!host) {
+				return;
+			}
 			chrome.socket.connect(sid, host, port, function (resultCode) {
 				if (resultCode === 0) {
 					done();

@@ -46,8 +46,9 @@
 
 <div id="settingsTab" class="tab" ng-controller="settingsCtrl">
 <form ng-submit="applySettings()">
-Listen Port<input type="text" ng-model="port"><br>
-Listen Address<input type="text" ng-model="address"><br>
+Listen Port<input type="text" ng-model="port" data-change="restart"><br>
+Listen Address<input type="text" ng-model="address" data-change="restart"><br>
+Always decode gzip<input type="checkbox" ng-model="decode_gzip"><br>
 <input type="submit" value="Save">
 </form>
 </div>
