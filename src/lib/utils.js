@@ -37,6 +37,16 @@ utils.u82t = function (array) {
 	}
 	return result;
 };
+utils.t2bs= function (string) {
+  var result = '';
+  for (var i = 0, l = string.length; i < l; ++i) {
+    result += String.fromCharCode(string.charCodeAt(i) & 0xff);
+  }
+  return result;
+};
+utils.decodeUtf8 = function (str) {
+  return decodeURIComponent(escape(str));
+};
 utils.extend = function () {
 	var args = Array.prototype.slice.call(arguments);
 	var result = {};
