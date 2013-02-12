@@ -7,6 +7,7 @@
 'use strict';
 
 var frontend;
+var saveData = {};
 var onLaunched = function () {
 	if (frontend) {
 		frontend.focus();
@@ -48,14 +49,23 @@ var onLaunched = function () {
 			}
 		}, 500);
 		var dom_interval = setInterval(function () {
-			if (!frontend.contentWindow.windowClose) {
+			var win = frontend.contentWindow;
+			if (!win.windowClose) {
 				return;
 			}
-			frontend.contentWindow.windowReload = function () {
+			win.appEvents.addListener('windowReload', function () {
 				frontend.toReload = true;
 				frontend.close();
-			};
-			sockets = frontend.contentWindow.SocketTable.sockets;
+			});
+			win.appEvents.addListener('backgroundSave', function (key, val) {
+				saveData[key] = val;
+			});
+			win.appEvents.addListener('init', function () {
+				Object.keys(saveData).forEach(function (key) {
+					win.appEvents.emitEvent('backgroundLoad', [key, saveData[key]]);
+				});
+			});
+			sockets = win.SocketTable.sockets;
 			frontend.show();
 			clearInterval(dom_interval);
 		});

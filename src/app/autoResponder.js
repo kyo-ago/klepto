@@ -6,7 +6,14 @@
 
 var autoResponder = function ($scope) {
 	$scope.event = new EventEmitter();
-	$scope.rules = [];
+	$scope.rules = $scope.rules || [];
+	appEvents.addListener('backgroundLoad', function (key, val) {
+		if (key !== 'autoResponderRules') {
+			return;
+		}
+		//TODO: Reactivate file
+		$scope.inportDnDFiles(val);
+	});
 
 	$scope.addRule = function () {
 	};
@@ -17,10 +24,15 @@ var autoResponder = function ($scope) {
 			return (new klass(entry, filer)).load(function () {
 				this.setRule(this.entry);
 			});
-		})).next(function (rules) {
-			$scope.$apply(function () {
-				$scope.rules = $scope.rules.concat(rules);
-			});
+		})).next($scope.applyRules);
+	};
+	$scope.applyRules = function (rules) {
+		$scope.$apply(function () {
+			$scope.rules = $scope.rules.concat(rules);
+			var param = ['autoResponderRules', $scope.rules.map(function (rule) {
+				return rule.getEntry();
+			})];
+			appEvents.emitEvent('backgroundSave', param);
 		});
 	};
 

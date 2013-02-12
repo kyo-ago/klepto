@@ -27,7 +27,7 @@ var settings = function ($scope) {
 		});
 		utils.saveStorage(function () {
 			if (require_restart) {
-				window.windowReload();
+				appEvents.emitEvent('windowReload');
 			}
 		});
 	};

@@ -30,6 +30,9 @@
 		fr.readAsText(file);
 		return defer;
 	};
+	prop.getEntry = function () {
+		return this.entry;
+	};
 	prop.isMatch = function () {};
 	prop.isPathMatch = function (path, match) {
 		return path.lastIndexOf(match) === (path.length - match.length);
@@ -53,7 +56,7 @@
 		var defer = Deferred();
 		this.entry.file(function (file) {
 			this.file = file;
-			callback.call(this);
+			callback && callback.call(this);
 			defer.call(this);
 		}.bind(this));
 		return defer;
@@ -84,7 +87,7 @@
 		var defer = Deferred();
 		this.filer.dir(this.entry, function (map) {
 			this.map = map;
-			callback.call(this);
+			callback && callback.call(this);
 			defer.call(this);
 		}.bind(this));
 		return defer;
