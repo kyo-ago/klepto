@@ -30,8 +30,11 @@
 		fr.readAsText(file);
 		return defer;
 	};
-	prop.getEntry = function () {
-		return this.entry;
+	prop.copy = function (instance) {
+		['enable', 'matcher'].forEach(function (key) {
+			this[key] = instance[key];
+		}.bind(this));
+		return this;
 	};
 	prop.isMatch = function () {};
 	prop.isPathMatch = function (path, match) {
@@ -54,7 +57,7 @@
 
 	prop.load = function (callback) {
 		var defer = Deferred();
-		this.entry.file(function (file) {
+		FileEntry.file.call(this.entry, function (file) {
 			this.file = file;
 			callback && callback.call(this);
 			defer.call(this);
@@ -102,7 +105,7 @@
 				return false;
 			}
 			if (this.isPathMatch(path, key)) {
-				this.map[key].file(callback);
+				FileEntry.file.call(this.map[key].file, callback);
 				return true;
 			}
 			return false;

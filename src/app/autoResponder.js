@@ -7,15 +7,20 @@
 var autoResponder = function ($scope) {
 	$scope.event = new EventEmitter();
 	$scope.rules = $scope.rules || [];
-	appEvents.addListener('backgroundLoad', function (key, val) {
+	appEvents.addListener('backgroundLoad', function (key, rules) {
 		if (key !== 'autoResponderRules') {
 			return;
 		}
-		//TODO: Reactivate file
-		$scope.inportDnDFiles(val);
+		Deferred.parallel(rules.map(function (rule) {
+			var isDir = rule.constructor.name === ResponseDirectory.name;
+			var klass = isDir ? ResponseDirectory : ResponseFile;
+			var instance = new klass(rule.entry, filer);
+			return instance.copy(rule).load();
+		})).next($scope.applyRules);
 	});
 
 	$scope.addRule = function () {
+	console.debug(this, arguments);
 	};
 
 	$scope.inportDnDFiles = function (entries) {
@@ -29,9 +34,7 @@ var autoResponder = function ($scope) {
 	$scope.applyRules = function (rules) {
 		$scope.$apply(function () {
 			$scope.rules = $scope.rules.concat(rules);
-			var param = ['autoResponderRules', $scope.rules.map(function (rule) {
-				return rule.getEntry();
-			})];
+			var param = ['autoResponderRules', $scope.rules];
 			appEvents.emitEvent('backgroundSave', param);
 		});
 	};

@@ -81,13 +81,13 @@ utils.loadStorage = function (callback) {
 		callback && callback();
 	}.bind(this));
 };
-
+// http://0-9.tumblr.com/post/42993367868/another-window-object-import
 Filer.prototype.dir = function (entry, callback, result) {
 	var self = this;
 	result = result || {};
 
 	var defer = Deferred();
-	this.ls(entry, function (entries) {
+	this.lsdir(entry, function (entries) {
 		defer.call(entries);
 	});
 	defer.next(function (entries) {
@@ -104,4 +104,44 @@ Filer.prototype.dir = function (entry, callback, result) {
 	}).next(function () {
 		callback.call(self, result);
 	});
+};
+Filer.prototype.lsdir = function (entry, callback) {
+	var max = 3;
+	var result = {};
+	(function readDir () {
+		var reader = DirectoryEntry.createReader.call(entry);
+		DirectoryReader.readEntries.call(reader, function (entries) {
+			if (!entries.length) {
+				return success(result);
+			}
+			var new_result = Util.toArray(entries).filter(function (entry) {
+				var exist = result[entry.fullPath];
+				result[entry.fullPath] = entry;
+				return !exist;
+			});
+			if (!new_result.length) {
+				if (max) {
+					max--;
+				}
+				if (!max) {
+					return success(result);
+				}
+			}
+			return setTimeout(readDir);
+		});
+	})();
+	function success (result) {
+		var results = Object.keys(result).sort(function(a, b) {
+			return (a.name < b.name
+				? -1
+				: (b.name < a.name
+					? 1
+					: 0
+				)
+			);
+		}).map(function (key) {
+			return result[key];
+		});
+		callback(results);
+	}
 };

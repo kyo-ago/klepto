@@ -62,6 +62,25 @@ Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)]
 	;
 
 	window.windowClose = SocketTable.allDestroy.bind(SocketTable);
+	return Deferred.parallel([
+		function () {
+			var defer = Deferred();
+			filer.create('dummy.txt', false, function (fileEntry) {
+				window.FileEntry = fileEntry.constructor.prototype;
+				defer.call();
+			});
+			return defer;
+		},
+		function () {
+			var defer = Deferred();
+			filer.mkdir('dummy', false, function(dirEntry) {
+				window.DirectoryEntry = dirEntry.constructor.prototype;
+				window.DirectoryReader = dirEntry.createReader().constructor.prototype;
+				defer.call();
+			});
+			return defer;
+		}
+	]);
 }).next(function () {
 	appEvents.emitEvent('init');
 	var addListener = appEvents.addListener;
