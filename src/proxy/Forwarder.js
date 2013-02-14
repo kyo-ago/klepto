@@ -68,9 +68,8 @@
 		function serverConnect (done) {
 			var sid = this.sockets.get('server');
 			var loc = this.location;
-			var host = loc.hostname;
+			var host = loc.hostname || this.request.getHeader('host');
 			var port = loc.port || 80;
-			//TODO:support CONNECT method
 			if (!host) {
 				return;
 			}
@@ -128,6 +127,9 @@
 				done();
 			}.bind(this));
 		},
+		function userFilter (done) {
+			Deferred.next(done);
+		},
 		function browserWrite (done) {
 			var text = this.response.getText();
 			var len = text.length;
@@ -154,15 +156,16 @@
 		this.deferred.cancel();
 	};
 	prop.setResponse = function (file) {
-		var header = [
+		this.response = new HttpResponse(file.data || [
 			'HTTP/1.1 200 OK',
 			'Connection: close',
-			'Content-Length: ' + file.data.length,
+			'Content-Length: ' + file.body.length,
 			'Content-Type: ' + file.type,
 			'Date: ' + (new Date).toUTCString(),
-			'Cache-control: private'
-		].join('\r\n');
-		this.response = new HttpResponse(header + '\r\n\r\n' + file.data);
+			'Cache-control: private',
+			'',
+			file.body
+		].join('\r\n'));
 		return this;
 	};
 

@@ -31,17 +31,33 @@
 <!-- #networkListTab --></div>
 
 <div id="autoResponderTab" class="tab" ng-controller="autoResponderCtrl">
-<table>
+<div class="rulesTable" ng-show="rulesTable">
+<table ng-show="rulesTable" ng-init="rulesTable = true">
 <tr ng-repeat="rule in rules">
 <td><input type="checkbox" ng-model="rule.enable"></td>
 <td><input type="text" ng-model="rule.matcher"></td>
 <td>{{rule.path}}</td>
 </tr>
 </table>
-<form ng-submit="addRule()">
-File path<input type="text" name="matcher"><textarea name="filter"></textarea>
+<input type="submit" value="addTemplate" ng-click="showForm('addTemplate')">
+<input type="submit" value="addFilter" ng-click="showForm('addFilter')">
+<!-- .rulesTable --></div>
+<div class="addForms">
+<form ng-submit="addTemplateRule()" ng-show="addTemplate">
+Target path<input type="text"><br>
+Template value<br>
+<textarea></textarea><br>
 <input type="submit" value="Save">
+<input type="reset" value="Cancel" ng-click="hideForm()">
 </form>
+<form ng-submit="addFilterRule()" ng-show="addFilter">
+Target path<input type="text"><br>
+Filter code<br>
+<textarea></textarea><br>
+<input type="submit" value="Save">
+<input type="reset" value="Cancel" ng-click="hideForm()">
+</form>
+<!-- .addForms --></div>
 <!-- #autoResponderTab --></div>
 
 <div id="settingsTab" class="tab" ng-controller="settingsCtrl">
@@ -53,7 +69,9 @@ Always decode gzip<input type="checkbox" ng-model="decode_gzip"><br>
 </form>
 </div>
 
-</div>
+<!-- #view --></div>
+
+<iframe src="/html/sandbox.html" style="display: none" id="sandbox"></iframe>
 
 <script src="/lib/gunzip.min.js"></script>
 <script src="/lib/filer.js"></script>
@@ -64,6 +82,9 @@ Always decode gzip<input type="checkbox" ng-model="decode_gzip"><br>
 <script src="/lib/jquery.js"></script>
 <script src="/lib/angular.js"></script>
 <script src="/src/lib/Response.js"></script>
+<script src="/src/lib/Response/FileSystem.js"></script>
+<script src="/src/lib/Response/Text.js"></script>
+<script src="/src/lib/Response/Command.js"></script>
 <script src="/src/lib/utils.js"></script>
 <script src="/src/proxy/SocketTable.js"></script>
 <script src="/src/proxy/Header.js"></script>

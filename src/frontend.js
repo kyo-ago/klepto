@@ -12,6 +12,7 @@ Deferred.onerror = function () {
 
 var filer = new Filer();
 var appEvents = new EventEmitter();
+var sandbox = $('#sandbox').get(0);
 Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)].map(function (func) {
 	var defer = Deferred();
 	func(function () {
@@ -19,6 +20,51 @@ Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)]
 	});
 	return defer;
 })).next(function () {
+	return Deferred.parallel([
+		function () {
+			var defer = Deferred();
+			filer.create('dummy.txt', false, function (fileEntry) {
+				window.FileEntry = fileEntry.constructor.prototype;
+				defer.call();
+			});
+			return defer;
+		},
+		function () {
+			var defer = Deferred();
+			filer.mkdir('dummy', false, function(dirEntry) {
+				window.DirectoryEntry = dirEntry.constructor.prototype;
+				window.DirectoryReader = dirEntry.createReader().constructor.prototype;
+				defer.call();
+			});
+			return defer;
+		},
+		function () {
+			var defer = Deferred();
+			chrome.socket.getNetworkList(function (nets) {
+				window.NetworkInterface = {};
+				nets.forEach(function (net) {
+					NetworkInterface[net['address']] = net['name'];
+				});
+				defer.call();
+			});
+			return defer;
+		},
+		appInitialize
+	]);
+}).next(function () {
+	window.windowClose = SocketTable.allDestroy.bind(SocketTable);
+	appEvents.emitEvent('init');
+	var addListener = appEvents.addListener;
+	appEvents.addListener = function (evt, listener) {
+		if (evt === 'init') {
+			listener();
+			return this;
+		}
+		addListener.apply(this, arguments);
+	};
+});
+
+function appInitialize () {
 	$('#menu a').on('click', function () {
 		var elem = angular.element($(this).attr('href'));
 		elem.show().siblings().hide().each(function () {
@@ -41,6 +87,8 @@ Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)]
 	})).addListener('startForwarder', function (forwarder) {
 		forwarder.addListener('serverRequest', function () {
 			$autoResponder.responseRequest(this);
+		}.bind(forwarder)).addListener('userFilter', function () {
+			$autoResponder.userFilter(this);
 		}.bind(forwarder)).addListener('done', function () {
 			$networkList.addLog(this);
 		}.bind(forwarder));
@@ -60,38 +108,7 @@ Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)]
 			}));
 		})
 	;
-
-	window.windowClose = SocketTable.allDestroy.bind(SocketTable);
-	return Deferred.parallel([
-		function () {
-			var defer = Deferred();
-			filer.create('dummy.txt', false, function (fileEntry) {
-				window.FileEntry = fileEntry.constructor.prototype;
-				defer.call();
-			});
-			return defer;
-		},
-		function () {
-			var defer = Deferred();
-			filer.mkdir('dummy', false, function(dirEntry) {
-				window.DirectoryEntry = dirEntry.constructor.prototype;
-				window.DirectoryReader = dirEntry.createReader().constructor.prototype;
-				defer.call();
-			});
-			return defer;
-		}
-	]);
-}).next(function () {
-	appEvents.emitEvent('init');
-	var addListener = appEvents.addListener;
-	appEvents.addListener = function (evt, listener) {
-		if (evt === 'init') {
-			listener();
-			return this;
-		}
-		addListener.apply(this, arguments);
-	};
-});
+};
 
 angular.module('ng')
 	.controller('networkListCtrl', ['$scope', networkList])

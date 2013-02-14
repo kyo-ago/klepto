@@ -71,6 +71,9 @@
 		}
 		return !!this.text.match('\r\n\r\n');
 	};
+	prop.getBodyText = function () {
+		return this.body;
+	};
 	prop.setBody = function (text) {
 		var method = this.head.getMethod();
 		if (method !== 'post') {

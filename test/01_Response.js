@@ -49,7 +49,7 @@ describe('ResponseDirectory', function () {
 			expect(res).to.be.an.instanceof(ResponseDirectory);
 		});
 	});
-	describe('instance', function () {
+	describe('isMatch', function () {
 		var res = new ResponseDirectory();
 		res.matcher = '/hoge/';
 		res.entry = {
@@ -59,12 +59,20 @@ describe('ResponseDirectory', function () {
 			'/huga/dir' : { 'isDirectory' : true },
 			'/huga/huga.txt' : { 'file' : sinon.spy() },
 		};
-		it('isMatch', function () {
-			expect(res.isMatch('/huga/dir', '')).to.be.false;
-			expect(res.isMatch('/huga/huga.txt', '')).to.be.false;
-			expect(res.map['/huga/huga.txt'].file.called).to.be.false;
-			expect(res.isMatch('/hoge/huga.txt', '')).to.be.true;
-			expect(res.map['/huga/huga.txt'].file.called).to.be.true;
+		it('unmatch 1', function () {
+			var spy = sinon.spy();
+			expect(res.isMatch('/huga/dir', spy)).to.be.false;
+			expect(spy.called).to.be.false;
+		});
+		it('unmatch 2', function () {
+			var spy = sinon.spy();
+			expect(res.isMatch('/huga/huga.txt', spy)).to.be.false;
+			expect(spy.called).to.be.false;
+		});
+		it('match', function () {
+			var spy = sinon.spy();
+			expect(res.isMatch('/hoge/huga.txt', spy)).to.be.true;
+			expect(spy.called).to.be.true;
 		});
 	});
 });

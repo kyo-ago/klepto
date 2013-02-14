@@ -63,6 +63,30 @@ utils.extend = function () {
 	}
 	return result;
 };
+utils.extend = function () {
+	var args = Array.prototype.slice.call(arguments);
+	var result = {};
+	for (var i = 0, l = args.length; i < l; ++i) {
+		var arg = args[i];
+		if (!arg || 'object' !== typeof arg) {
+			continue;
+		}
+		var keys = Object.keys(arg);
+		for (var k = 0, j = keys.length; k < j; ++k) {
+			var key = keys[k];
+			result[key] = arg[key];
+		}
+	}
+	return result;
+};
+utils.parseQuery = function (strs) {
+	var result = {};
+	strs.split('&').forEach(function (str) {
+		var k_v = str.split('=');
+		result[decodeURIComponent(k_v.shift())] = decodeURIComponent(k_v.join('='));
+	});
+	return result;
+};
 utils.storage = {};
 utils.saveStorage = function (callback) {
 	chrome.storage.local.set(this.storage, function() {
@@ -81,6 +105,10 @@ utils.loadStorage = function (callback) {
 		callback && callback();
 	}.bind(this));
 };
+
+if (!this.Filer) {
+	this.Filer = function () {};
+}
 // http://0-9.tumblr.com/post/42993367868/another-window-object-import
 Filer.prototype.dir = function (entry, callback, result) {
 	var self = this;

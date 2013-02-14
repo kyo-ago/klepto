@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>sandbox</title>
+</head>
+<body>
+<script src="/src/lib/utils.js"></script>
+<script src="/lib/gunzip.min.js"></script>
+<script>
+	function gunzip (text) {
+		return utils.decodeUtf8(utils.u82t((new Zlib.Gunzip(utils.t2u8(text))).decompress()));
+	}
+	function decodeUTF8 (text) {
+		return utils.decodeUtf8(utils.t2bs(text));
+	}
+	window.addEventListener('message', function (evn) {
+		var wait_flag = false;
+		var wait = function () {
+			wait_flag = true;
+		};
+		var head = evn.data.head;
+		var body = evn.data.body;
+		var type = evn.data.type;
+		eval(evn.data.filter);
+		if (!wait_flag) {
+			evn.source.postMessage({
+				'command' : evn.data.command,
+				'head' : head,
+				'body' : body,
+				'type' : type
+			}, evn.origin);
+		}
+	});
+</script>
+</body>
+</html>

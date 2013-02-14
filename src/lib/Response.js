@@ -13,103 +13,19 @@
 	var prop = Klass.prototype;
 
 	prop.load = function () {};
-	prop.setRule = function (entry) {
-		this.enable = true;
-		this.matcher = entry.fullPath;
-		this.path = entry.name;
+	prop.isEnabled = function (type) {
+		return this.enable && this.type === type;
 	};
-	prop.readFile = function (file) {
-		var fr = new FileReader();
-		var defer = Deferred();
-		fr.onload = function () {
-			defer.call({
-				'data' : fr.result,
-				'type' : file.type
-			});
-		}.bind(this);
-		fr.readAsText(file);
-		return defer;
-	};
+	prop.replaceContent = function () {};
 	prop.copy = function (instance) {
-		['enable', 'matcher'].forEach(function (key) {
-			this[key] = instance[key];
+		['enable', 'matcher', 'filter', 'entry'].forEach(function (key) {
+			this[key] = this[key] || instance[key];
 		}.bind(this));
 		return this;
 	};
 	prop.isMatch = function () {};
 	prop.isPathMatch = function (path, match) {
 		return path.lastIndexOf(match) === (path.length - match.length);
-	};
-
-	exports[Klass.name] = Klass;
-})(this);
-
-(function (exports) {
-	'use strict';
-
-	var Klass = function ResponseFile (entry, filer) {
-		this.entry = entry;
-		this.filer = filer;
-		this.file = {};
-	};
-	Klass.inherit(ResponseRule);
-	var prop = Klass.prototype;
-
-	prop.load = function (callback) {
-		var defer = Deferred();
-		FileEntry.file.call(this.entry, function (file) {
-			this.file = file;
-			callback && callback.call(this);
-			defer.call(this);
-		}.bind(this));
-		return defer;
-	};
-	prop.isMatch = function (path, callback) {
-		if (this.isPathMatch(path, this.matcher)) {
-			callback(this.file);
-			return true;
-		}
-		return false;
-	};
-
-	exports[Klass.name] = Klass;
-})(this);
-
-(function (exports) {
-	'use strict';
-
-	var Klass = function ResponseDirectory (entry, filer) {
-		this.entry = entry;
-		this.filer = filer;
-		this.map = {};
-	};
-	Klass.inherit(ResponseRule);
-	var prop = Klass.prototype;
-
-	prop.load = function (callback) {
-		var defer = Deferred();
-		this.filer.dir(this.entry, function (map) {
-			this.map = map;
-			callback && callback.call(this);
-			defer.call(this);
-		}.bind(this));
-		return defer;
-	};
-	prop.isMatch = function (path, callback) {
-		if (!path.match(this.matcher)) {
-			return false;
-		}
-		path = path.replace(this.matcher, this.entry.fullPath);
-		return Object.keys(this.map).some(function (key) {
-			if (this.map[key].isDirectory) {
-				return false;
-			}
-			if (this.isPathMatch(path, key)) {
-				FileEntry.file.call(this.map[key].file, callback);
-				return true;
-			}
-			return false;
-		}.bind(this));
 	};
 
 	exports[Klass.name] = Klass;

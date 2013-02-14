@@ -2,7 +2,7 @@
 	"name": "Klepto proxy",
 	"version": "0.1",
 	"manifest_version": 2,
-	"minimum_chrome_version": "23",
+	"minimum_chrome_version": "24",
 	"icons": {
 		"16": "/img/logo.png",
 		"128": "/img/logo.png"
@@ -13,6 +13,9 @@
 				"/src/background.js"
 			]
 		}
+	},
+	"sandbox" : {
+		"pages" : ["/html/sandbox.html"]
 	},
 	"permissions": [
 		"experimental",
