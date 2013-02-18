@@ -43,6 +43,12 @@
 		sandbox.contentWindow.postMessage(param, '*');
 		return defer;
 	};
+	prop.copy = function (instance) {
+		['enable', 'matcher', 'path', 'filter'].forEach(function (key) {
+			this[key] = this[key] || instance[key];
+		}.bind(this));
+		return this;
+	};
 
 	exports[Klass.name] = Klass;
 })(this);

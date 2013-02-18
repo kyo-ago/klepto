@@ -51,6 +51,12 @@
 
 		return defer;
 	};
+	prop.copy = function (instance) {
+		['enable', 'matcher', 'path', 'entry'].forEach(function (key) {
+			this[key] = this[key] || instance[key];
+		}.bind(this));
+		return this;
+	};
 
 	exports[Klass.name] = Klass;
 })(this);
@@ -67,6 +73,7 @@
 
 	prop.load = function (entry) {
 		var defer = Deferred();
+		entry = this.entry || entry;
 		this.entry = entry;
 		this.matcher = entry.name;
 		this.path = entry.fullPath;
@@ -96,6 +103,7 @@
 	var prop = Klass.prototype;
 
 	prop.load = function (entry) {
+		entry = this.entry || entry;
 		this.entry = entry;
 		this.path = this.matcher = entry.fullPath;
 		var defer = Deferred();
