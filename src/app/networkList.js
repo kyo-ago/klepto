@@ -39,7 +39,7 @@ var networkList = function ($scope) {
 	$scope.setDecodeData = function () {
 		var log = $scope.log;
 		var header = log.response.getHeaderText();
-		var body = log.response.getBodyText();
+		var body = log.response.getBodyText('clear_chunk');
 		var size = TRUNCATE_CHARACTERS_SIZE;
 		var gunzip;
 		if (!utils.storage.settings.decode_gzip && body.length > size) {

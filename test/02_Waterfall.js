@@ -40,11 +40,12 @@ describe('Waterfall', function () {
 			var event = sinon.spy();
 			waterfall.addListener(method.name, event);
 			var defer = waterfall.waterfall_loop(method);
-			expect(event.called).to.be.true;
-			expect(method.called).to.be.true;
+			defer.next(function () {
+				expect(event.called).to.be.true;
+				expect(method.called).to.be.true;
+				done();
+			});
 			expect(defer).to.be.an.instanceof(Deferred);
-			defer.next(done);
-			method.args[0][0]();
 		});
 	});
 });

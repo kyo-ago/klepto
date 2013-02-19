@@ -112,15 +112,37 @@
 		// trans === 'chunked'
 		return this.checkChunk(this.body);
 	};
-	prop.getBodyText = function () {
-		return this.body;
+	prop.getBodyText = function (param) {
+		if (param !== 'clear_chunk') {
+			return this.body;
+		}
+		var data = this.parseChunk(this.body);
+		if (!data) {
+			throw 'parse chunk error';
+		}
+		//^\r\n$ === no trailer, \r\n\r\n$ === trailer
+		return data;
 	};
 	prop.checkChunk = function (text) {
+		var data = this.parseChunk(text);
+		if (!data) {
+			return false;
+		}
+		return !!data;
+	};
+	prop.setBody = function (text) {
+		this.head.set('content-length', text.length);
+		this.body = text;
+		delete this.text;
+	};
+	prop.parseChunk = function (text) {
 		var size = 0;
+		var result = '';
 		do {
-			var size = undefined;
-			text = text.replace(/^(\w+).*\r\n/, function (all, hit) {
+			size = undefined;
+			text = text.replace(/^(\w+).*?\r\n/, function (all, hit) {
 				size = parseInt(hit, 16);
+				result
 				return '';
 			});
 			if (isNaN(size)) {
@@ -129,19 +151,19 @@
 			//done
 			if (size === 0) {
 				//^\r\n$ === no trailer, \r\n\r\n$ === trailer
-				return !!text.match(/^\r\n$|\r\n\r\n$/);
+				if (!text.match(/^\r\n/)) {
+					return false;
+				}
+				return result;
 			}
 			//2 === '\r\n'
+			result += text.substring(0, size);
 			text = text.substring(size + 2);
 			if (!text) {
 				return false;
 			}
 		} while (size);
-	};
-	prop.setBody = function (text) {
-		this.head.set('content-length', text.length);
-		this.body = text;
-		delete this.text;
+		return [result, text];
 	};
 
 	exports[Klass.name] = Klass;

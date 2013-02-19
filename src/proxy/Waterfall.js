@@ -54,10 +54,13 @@
 		return this;
 	};
 	prop.waterfall_loop = function (method) {
-		var defer = Deferred();
-		this.emitEvent(method.name);
-		method.call(this, defer.call.bind(defer));
-		return defer;
+		return Deferred.next(function () {
+			var defer = Deferred();
+			Deferred.next(method.bind(this, defer.call.bind(defer)));
+			return defer;
+		}.bind(this)).next(function () {
+			this.emitEvent(method.name);
+		}.bind(this));
 	};
 	prop.waterfall_stop = function () {
 		var onerror = Deferred.onerror;

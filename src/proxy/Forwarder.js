@@ -68,11 +68,18 @@
 		function serverConnect (done) {
 			var sid = this.sockets.get('server');
 			var loc = this.location;
-			var host = loc.hostname || this.request.getHeader('host');
-			var port = loc.port || 80;
+			var host = loc.hostname;
+			var port = loc.port;
+			if (!host) {
+				host = this.request.getHeader('host');
+				host = host.split(':');
+				port = host[1];
+				host = host[0];
+			}
 			if (!host) {
 				return;
 			}
+			port = parseInt(port) || 80;
 			chrome.socket.connect(sid, host, port, function (resultCode) {
 				if (resultCode === 0) {
 					done();
@@ -144,8 +151,9 @@
 			}.bind(this));
 		},
 		// calling "done" event
-		function done () {
+		function done (done) {
 			this.disconnect();
+			done();
 		}
 	].map(function (method) {
 		return prop[method.name] = method;

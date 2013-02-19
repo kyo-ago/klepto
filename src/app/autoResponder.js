@@ -100,27 +100,8 @@ function autoResponder_forwarder ($scope) {
 	};
 	$scope.execCommand = function (forwarder) {
 		var forw = forwarder;
-		var param = utils.parseQuery(forw.location.search.replace(/^\?/, ''));
-		var path = Location.parse(param.url).pathname;
 		forw.stop();
-		var command = $scope.responseCommand;
-		var result = $scope.rules.some(function (rule) {
-			if (!rule.saveData || !rule.isEnabled('responseRequest')) {
-				return false;
-			}
-			return rule.isMatch(path, function (match) {
-				var param = utils.parseQuery(forw.request.getBodyText());
-				rule.saveData(param, match)
-					.next(command.replaceContent.bind(command))
-					.next(forw.setResponse.bind(forw))
-					.next(forw.switching.bind(forw, 'browserWrite'))
-				;
-			});
-		});
-		if (result) {
-			return;
-		}
-		command.noReplaceContent()
+		$scope.responseCommand.wsResponse(forw)
 			.next(forw.setResponse.bind(forw))
 			.next(forw.switching.bind(forw, 'browserWrite'))
 		;

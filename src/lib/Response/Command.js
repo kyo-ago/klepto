@@ -17,28 +17,41 @@
 	var prop = Klass.prototype;
 
 	prop.isMatch = function (forwarder) {
-		return ~['localhost', '127.0.0.1'].indexOf(forwarder.location.host);
+		return ~['localhost', '127.0.0.1'].indexOf(forwarder.location.hostname);
 	};
-	prop.noReplaceContent = function () {
+	prop.wsResponse = function (forwarder) {
 		var defer = Deferred();
-		Deferred.next(defer.call.bind(defer, this.getMessage.bind(this, {
-			'message' : 'noReplaceContent'
-		})));
+
+		var forw = forwarder;
+		if (forw.request.getHeader('upgrade') !== 'websocket') {
+			Deferred.next(defer.call.bind(defer, {
+				'body' : JSON.stringify({
+					'result' : 'ng',
+					'data' : {
+						'message' : 'require_websocket_connection'
+					}
+				}),
+				'type' : 'application/json'
+			}));
+			return defer;
+		}
+
+		var sec_key = forw.request.getHeader('sec-websocket-key').trim();
+		sec_key += '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
+		var sha1 = new jsSHA(sec_key, 'TEXT');
+		var base64 = sha1.getHash('SHA-1', 'B64');
+		Deferred.next(defer.call.bind(defer, {
+			'data' : [
+				'HTTP/1.1 101 Switching Protocols',
+				'Upgrade: websocket',
+				'Connection: Upgrade',
+				'Sec-WebSocket-Accept: ' + base64,
+				'Date: ' + (new Date).toUTCString(),
+				'', ''
+			].join('\r\n')
+		}));
+
 		return defer;
-	};
-	prop.replaceContent = function (message) {
-		var defer = Deferred();
-		Deferred.next(defer.call.bind(defer, this.getMessage.bind(this, message)));
-		return defer;
-	};
-	prop.getMessage = function (data) {
-		return {
-			'body' : JSON.stringify({
-				'result' : 'ok',
-				'data' : data
-			}),
-			'type' : 'application/json'
-		};
 	};
 
 	exports[Klass.name] = Klass;

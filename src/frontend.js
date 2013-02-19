@@ -85,7 +85,7 @@ function appInitialize () {
 		'address' : utils.storage.settings.address || '0.0.0.0',
 		'port' : (utils.storage.settings.port - 0) || 24888
 	})).addListener('startForwarder', function (forwarder) {
-		forwarder.addListener('serverRequest', function () {
+		forwarder.addListener('browserRead', function () {
 			$autoResponder.responseRequest(this);
 		}.bind(forwarder)).addListener('userFilter', function () {
 			$autoResponder.userFilter(this);
