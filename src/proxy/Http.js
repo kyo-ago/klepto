@@ -116,6 +116,10 @@
 		if (param !== 'clear_chunk') {
 			return this.body;
 		}
+		var trans = (this.head.get('transfer-encoding') || '').toLowerCase();
+		if (trans !== 'chunked') {
+			return this.body;
+		}
 		var data = this.parseChunk(this.body);
 		if (!data) {
 			throw 'parse chunk error';

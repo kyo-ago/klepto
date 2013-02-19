@@ -49,6 +49,7 @@ describe('HttpResponse', function () {
 		it('parse', function () {
 			expect(http.getText()).to.eql(text);
 			expect(http.getBodyText()).to.eql(body);
+			expect(http.getBodyText('clear_chunk')).to.eql(body);
 			expect(http.isComplete()).to.eql(true);
 		});
 		it('parse_header', function () {
