@@ -31,7 +31,11 @@ var networkList = function ($scope) {
 		$('#inspector textarea').prop('scrollTop', 0);
 		log.requestText = log.request.getText();
 		if (log.response.getHeader('content-encoding') !== 'gzip') {
-			log.responsetText = utils.decodeUtf8(utils.t2bs(log.response.getText()));
+			log.responsetText = log.response.getText();
+			var content_type = log.response.getHeader('content-type');
+			if (!(content_type || '').match(/^image/)) {
+				log.responsetText = utils.decodeUtf8(utils.t2bs(log.responsetText));
+			}
 			return;
 		}
 		$scope.setDecodeData();
