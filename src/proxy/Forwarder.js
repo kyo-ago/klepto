@@ -153,7 +153,7 @@
 		// calling "done" event
 		function done (done) {
 			this.disconnect();
-			done();
+			done && done();
 		}
 	].map(function (method) {
 		return prop[method.name] = method;

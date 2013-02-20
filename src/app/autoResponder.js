@@ -101,9 +101,10 @@ function autoResponder_forwarder ($scope) {
 	$scope.execCommand = function (forwarder) {
 		var forw = forwarder;
 		forw.stop();
-		$scope.responseCommand.wsResponse(forw)
+		var command = $scope.responseCommand;
+		command.wsResponse(forw)
 			.next(forw.setResponse.bind(forw))
-			.next(forw.switching.bind(forw, 'browserWrite'))
+			.next(forw.browserWrite.bind(forw, command.wsConnect.bind(command, forw)))
 		;
 	};
 };
