@@ -13,6 +13,7 @@ Deferred.onerror = function () {
 var filer = new Filer();
 var appEvents = new EventEmitter();
 var sandbox = $('#sandbox').get(0);
+jQuery.event.props.push('dataTransfer');
 Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)].map(function (func) {
 	var defer = Deferred();
 	func(function () {
@@ -34,17 +35,6 @@ Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)]
 			filer.mkdir('dummy', false, function(dirEntry) {
 				window.DirectoryEntry = dirEntry.constructor.prototype;
 				window.DirectoryReader = dirEntry.createReader().constructor.prototype;
-				defer.call();
-			});
-			return defer;
-		},
-		function () {
-			var defer = Deferred();
-			chrome.socket.getNetworkList(function (nets) {
-				window.NetworkInterface = {};
-				nets.forEach(function (net) {
-					NetworkInterface[net['address']] = net['name'];
-				});
 				defer.call();
 			});
 			return defer;
@@ -97,7 +87,7 @@ function appInitialize () {
 	$(window)
 		.on('dragenter dragover', false)
 		.on('drop', function (evn) {
-			var dt = evn.originalEvent.dataTransfer;
+			var dt = evn.dataTransfer;
 			if (!dt.items.length) {
 				return;
 			}
