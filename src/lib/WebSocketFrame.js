@@ -15,7 +15,6 @@
 	'use strict';
 
 	var Klass = function WebSocketFrame () {};
-	Klass.inherit(EventEmitter);
 	var prop = Klass.prototype;
 
 	prop.parse = function (data) {
@@ -56,26 +55,36 @@
 			dv.getUint8(offset++),
 			dv.getUint8(offset++),
 			dv.getUint8(offset++),
-			dv.getUint8(offset)
+			dv.getUint8(offset++)
 		];
 		var result = '';
-		for (var i = offset, l = dv.byteLength; i < l; ++i) {
-			result += String.fromCharCode(dv.getUint8(i) ^ masks[(i % 4)|0]);
+		for (var i = offset, l = dv.byteLength, j = 0; i < l; ++i, ++j) {
+			result += String.fromCharCode(dv.getUint8(i) ^ masks[(j % 4)|0]);
 		}
 		return result;
 	};
 
-	Klass.t2wsab = function (text) {
-		var head = [0x81, text.length];
+	Klass.createFrame = function (opcode, text) {
+		//1000 === fin, mask === 0
+		var opbit = ('0000' + (opcode).toString(2)).substr(-4);
+		var head = [parseInt('1000' + opbit, 2), text.length];
 		var dv;
-		if (head[1] > 126) {
-			head[1] = 126;
+		if (head[1] > 0x7E) {
+			head[1] = 0x7E;
 			dv = new DataView(new ArrayBuffer(2));
 			dv.setUint16(0, text.length);
 			head.push(dv.getUint8(0));
 			head.push(dv.getUint8(1));
 		}
 		return utils.t2ab(utils.u82t(head) + text);
+	};
+	Klass.createCloseFrame = function () {
+		var dv = new DataView(new ArrayBuffer(2));
+		// 1000 === fin, 1000 === opcode(0x8 === close)
+		dv.setUint8(0, parseInt('10001000', 2));
+		// 0000 === mask, 0000 === length(0 byte)
+		dv.setUint8(0, parseInt('00000000', 2));
+		return dv;
 	};
 
 	exports[Klass.name] = Klass;

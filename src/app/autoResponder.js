@@ -70,41 +70,48 @@ function autoResponder_ui ($scope) {
 			]);
 		}
 	};
-};
+}
 function autoResponder_forwarder ($scope) {
-	$scope.responseCommand = new ResponseCommand();
 	$scope.responseRequest = function (forwarder) {
-		var forw = forwarder;
-		if (!$scope.responseCommand.isMatch(forw)) {
-			$scope.replaceContent(forw, 'responseRequest');
+		var fwd = forwarder;
+		if (!ResponseCommand.isMatch(fwd)) {
+			$scope.replaceContent(fwd, 'responseRequest');
 			return;
 		}
-		$scope.execCommand(forw);
+		$scope.commandConnect(fwd);
 	};
 	$scope.userFilter = function (forwarder) {
 		$scope.replaceContent(forwarder, 'userFilter');
 	};
 	$scope.replaceContent = function (forwarder, type) {
-		var forw = forwarder;
-		var path = forw.location.pathname;
+		var fwd = forwarder;
+		var path = fwd.location.pathname;
 		$scope.rules.some(function (rule) {
 			var enable = rule.isEnabled(type);
 			return enable && rule.isMatch(path, function (match) {
-				forw.stop();
-				rule.replaceContent(match, forw)
-					.next(forw.setResponse.bind(forw))
-					.next(forw.switching.bind(forw, 'browserWrite'))
+				fwd.stop();
+				rule.replaceContent(match, fwd)
+					.next(fwd.setResponse.bind(fwd))
+					.next(fwd.switching.bind(fwd, 'browserWrite'))
 				;
 			});
 		});
 	};
-	$scope.execCommand = function (forwarder) {
-		var forw = forwarder;
-		forw.stop();
-		var command = $scope.responseCommand;
-		command.wsResponse(forw)
-			.next(forw.setResponse.bind(forw))
-			.next(forw.browserWrite.bind(forw, command.wsConnect.bind(command, forw)))
+	$scope.commandConnect = function (forwarder) {
+		var fwd = forwarder;
+		fwd.stop();
+		var cmd = new ResponseCommand();
+		cmd.addListener('save', function (file) {
+			$scope.rules.some(function (rule) {
+				var enable = rule.isEnabled('responseRequest') && rule.saveData;
+				return enable && rule.isMatch(file.path, function (match) {
+					rule.saveData(file.data, match).next(cmd.sendMessage.bind(cmd, 'saveFile'));
+				});
+			});
+		}.bind(this));
+		cmd.response(fwd)
+			.next(fwd.setResponse.bind(fwd))
+			.next(fwd.browserWrite.bind(fwd, cmd.connect.bind(cmd, fwd)))
 		;
 	};
-};
+}

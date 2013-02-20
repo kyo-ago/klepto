@@ -41,9 +41,10 @@
 		chrome.fileSystem.getWritableEntry(entry, function (entry) {
 			entry.createWriter(function (writer) {
 				writer.onwriteend = function () {
-					defer.call(message);
+					writer.onwriteend = defer.call.bind(defer, message);
+					writer.truncate(data.length);
 				};
-				writer.write(new Blob([data.text], {
+				writer.write(new Blob([data], {
 					'type' : 'text/plain'
 				}));
 			});

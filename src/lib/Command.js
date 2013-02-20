@@ -13,17 +13,17 @@
 	Klass.inherit(EventEmitter);
 	var prop = Klass.prototype;
 
-	prop.isMatch = function (forwarder) {
+	Klass.isMatch = function (forwarder) {
 		return ~['localhost', '127.0.0.1'].indexOf(forwarder.location.hostname);
 	};
-	prop.wsResponse = function (forwarder) {
-		var forw = forwarder;
-		if (forw.request.getHeader('upgrade') !== 'websocket') {
-			return this.wsResponseError();
+	prop.response = function (forwarder) {
+		var fwd = forwarder;
+		if (fwd.request.getHeader('upgrade') !== 'websocket') {
+			return this.responseError();
 		}
-		return this.wsResponseSuccess(forw.request.getHeader('sec-websocket-key'));
+		return this.responseSuccess(fwd.request.getHeader('sec-websocket-key'));
 	};
-	prop.wsResponseError = function () {
+	prop.responseError = function () {
 		var defer = Deferred();
 		Deferred.next(defer.call.bind(defer, {
 			'body' : JSON.stringify({
@@ -36,56 +36,38 @@
 		}));
 		return defer;
 	};
-	prop.wsResponseSuccess = function (sec_key) {
+	prop.responseSuccess = function (sec_key) {
 		var defer = Deferred();
-		var sha1 = new jsSHA(sec_key.trim() + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'TEXT');
-		var base64 = sha1.getHash('SHA-1', 'B64');
+		var sec = WebSocketConnect.getAcceptKey(sec_key);
 		Deferred.next(defer.call.bind(defer, {
 			'data' : [
 				'HTTP/1.1 101 Switching Protocols',
 				'Upgrade: websocket',
 				'Connection: Upgrade',
-				'Sec-WebSocket-Accept: ' + base64,
+				'Sec-WebSocket-Accept: ' + sec,
 				'Date: ' + (new Date).toUTCString(),
 				'', ''
 			].join('\r\n')
 		}));
 		return defer;
 	};
-	prop.wsConnect = function (forwarder) {
-		this.wsRead([], forwarder);
-	};
-	prop.wsRead = function (frames, forwarder) {
-		var forw = forwarder;
-		var browser = forw.sockets.get('browser');
-		chrome.socket.read(browser, function (evn) {
-			if (!evn.data.byteLength) {
-				return forwarder.done();
-			}
-			var wsf = (new WebSocketFrame()).parse(evn.data);
-			frames.push(wsf);
-			if (!wsf.fin) {
-				this.wsRead(frames, forwarder);
-				return;
-			}
-			var text = frames.map(function (frame) {
-				return frame.text;
-			}).join('');
-			this.emitEvent('wsRead', [text]);
-			console.debug(text.length, text);
-			this.wsWrite(Array(100).join('123')+'abcd', forwarder);
-			this.wsRead([], forwarder);
-		}.bind(this));
-	};
-	prop.wsWrite = function (text, forwarder) {
-		var forw = forwarder;
-		var browser = forw.sockets.get('browser');
-		var ab = WebSocketFrame.t2wsab(text);
-		chrome.socket.write(browser, ab, function (evn) {
-			if (evn.bytesWritten !== ab.byteLength) {
-				throw 'command chrome.socket.write';
+	prop.connect = function (forwarder) {
+		var fwd = forwarder;
+		var socket = fwd.sockets.get('browser');
+		this.ws = (new WebSocketConnect()).connect(socket);
+		this.ws.addListener('close', fwd.disconnect.bind(fwd));
+		this.ws.addListener('read', function (data) {
+			var param = JSON.parse(data);
+			if (param.type = 'save') {
+				this.emitEvent('save', [param.file])
 			}
 		}.bind(this));
+	};
+	prop.sendMessage = function (message) {
+		this.ws.sendText(JSON.stringify({
+			'type' : 'message',
+			'message' : message
+		}));
 	};
 
 	exports[Klass.name] = Klass;
