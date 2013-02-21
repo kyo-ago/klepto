@@ -7,6 +7,7 @@
 var autoResponder = function ($scope) {
 	$scope.event = new EventEmitter();
 	$scope.rules = $scope.rules || [];
+	$scope.refresh_interval = 10000;
 	appEvents.addListener('backgroundLoad', function (key, rules) {
 		if (key !== 'autoResponderRules') {
 			return;
@@ -18,6 +19,11 @@ var autoResponder = function ($scope) {
 			return instance.copy(rule).load();
 		})).next($scope.applyRules);
 	});
+	$scope.interval = setInterval(function () {
+		$scope.rules.forEach(function (rule) {
+			rule.refresh && rule.refresh();
+		});
+	}, $scope.refresh_interval);
 	autoResponder_ui($scope);
 	autoResponder_forwarder($scope);
 };

@@ -12,7 +12,7 @@
 
 		this.option = utils.extend({
 			'socketId' : undefined,
-			'timeout' : 3000
+			'timeout' : 30000
 		}, option);
 
 		if (!this.option.socketId) {

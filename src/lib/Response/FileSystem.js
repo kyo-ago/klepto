@@ -114,6 +114,11 @@
 		}.bind(this));
 		return defer;
 	};
+	prop.refresh = function () {
+		filer.dir(this.entry, function (map) {
+			this.map = map;
+		}.bind(this));
+	};
 	prop.isMatch = function (path, callback) {
 		if (!path.match(this.matcher)) {
 			return false;
