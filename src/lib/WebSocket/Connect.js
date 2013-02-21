@@ -1,9 +1,4 @@
 /**
- * forked from: WebSocket on Chrome Socket API
- * https://github.com/Jxck/ChromeWebSocketServer
- * License
- * author: Jxck license: MIT
- *
  * @license Klepto proxy
  * Copyright (C) 2013 @kyo_ago https://github.com/kyo-ago/klepto
  * License: GPL

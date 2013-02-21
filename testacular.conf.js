@@ -13,7 +13,7 @@ files = [
   'lib/*.js',
   'src/app/*.js',
   'src/lib/*.js',
-  'src/lib/*/*.js',
+  'src/lib/**/*.js',
   'src/proxy/Waterfall.js',
   'src/proxy/*.js',
   'test/lib/chai.js',
