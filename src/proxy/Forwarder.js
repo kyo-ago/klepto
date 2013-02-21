@@ -20,13 +20,7 @@
 			return;
 		}
 		this.sockets.add('browser', this.option.socketId);
-
-		this.timeoutId = setTimeout(function () {
-			this.disconnect();
-		}.bind(this), this.option.timeout);
-		this.addListener('close', function () {
-			clearTimeout(this.timeoutId);
-		}.bind(this));
+		this.setTimeout();
 
 		this.request = undefined;
 		this.location = undefined;
@@ -159,6 +153,16 @@
 		return prop[method.name] = method;
 	});
 
+	prop.setTimeout = function () {
+		this.setTimeoutId = setTimeout(this.disconnect.bind(this), this.option.timeout);
+		this.addListener('close', this.clearTimeout.bind(this));
+	};
+	prop.clearTimeout = function () {
+		if (this.setTimeoutId) {
+			clearTimeout(this.setTimeoutId);
+			this.setTimeoutId = undefined;
+		}
+	};
 	prop.disconnect = function () {
 		this.sockets.removeAll();
 		this.deferred.cancel();

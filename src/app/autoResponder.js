@@ -78,6 +78,7 @@ function autoResponder_forwarder ($scope) {
 			$scope.replaceContent(fwd, 'responseRequest');
 			return;
 		}
+		fwd.clearTimeout();
 		$scope.commandConnect(fwd);
 	};
 	$scope.userFilter = function (forwarder) {
