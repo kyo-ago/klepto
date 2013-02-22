@@ -4,17 +4,7 @@
  * License: GPL
  */
 
-describe('Waterfall', function () {
-	describe('base', function () {
-		it('exist', function () {
-			expect(Waterfall).to.be.an('Function');
-		});
-		it('new', function () {
-			var waterfall = new Waterfall();
-			expect(waterfall).to.be.an('Object');
-			expect(waterfall).to.be.an.instanceof(Waterfall);
-		});
-	});
+describeKlass(Waterfall, function () {
 	describe('instance', function () {
 		var waterfall = new Waterfall();
 		waterfall.methods = [

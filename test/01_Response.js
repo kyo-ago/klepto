@@ -4,17 +4,7 @@
  * License: GPL
  */
 
-describe('ResponseRule', function () {
-	describe('base', function () {
-		it('exist', function () {
-			expect(ResponseRule).to.be.an('Function');
-		});
-		it('new', function () {
-			var res = new ResponseRule();
-			expect(res).to.be.an('Object');
-			expect(res).to.be.an.instanceof(ResponseRule);
-		});
-	});
+describeKlass(ResponseRule, function () {
 	describe('instance', function () {
 		var res = new ResponseRule();
 		it('isPathMatch', function () {
@@ -25,30 +15,10 @@ describe('ResponseRule', function () {
 	});
 });
 
-describe('ResponseFile', function () {
-	describe('base', function () {
-		it('exist', function () {
-			expect(ResponseFile).to.be.an('Function');
-		});
-		it('new', function () {
-			var res = new ResponseFile();
-			expect(res).to.be.an('Object');
-			expect(res).to.be.an.instanceof(ResponseFile);
-		});
-	});
+describeKlass(ResponseFile, function () {
 });
 
-describe('ResponseDirectory', function () {
-	describe('base', function () {
-		it('exist', function () {
-			expect(ResponseDirectory).to.be.an('Function');
-		});
-		it('new', function () {
-			var res = new ResponseDirectory();
-			expect(res).to.be.an('Object');
-			expect(res).to.be.an.instanceof(ResponseDirectory);
-		});
-	});
+describeKlass(ResponseDirectory, function () {
 	describe('isMatch', function () {
 		var res = new ResponseDirectory();
 		res.matcher = '/hoge/';

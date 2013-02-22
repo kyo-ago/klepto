@@ -6,39 +6,26 @@
 
 'use strict';
 
+var appEvents = new EventEmitter();
+var sandbox = $('#sandbox').get(0);
 Deferred.onerror = function () {
 	console.debug(arguments);
 };
-
-var filer = new Filer();
-var appEvents = new EventEmitter();
-var sandbox = $('#sandbox').get(0);
 jQuery.event.props.push('dataTransfer');
-Deferred.parallel([$, filer.init.bind(filer, {}), utils.loadStorage.bind(utils)].map(function (func) {
-	var defer = Deferred();
-	func(function () {
-		defer.call();
-	});
-	return defer;
-})).next(function () {
+var filesystem = new FileSystem();
+
+Deferred.parallel(
+	[function () {
+		var defer = Deferred();
+		Deferred.next($.bind($, defer.call.bind(defer)));
+		return defer;
+	},
+	utils.loadStorage.bind(utils),
+	filesystem.init.bind(filesystem),
+]).next(function () {
 	return Deferred.parallel([
-		function () {
-			var defer = Deferred();
-			filer.create('dummy.txt', false, function (fileEntry) {
-				window.FileEntry = fileEntry.constructor.prototype;
-				defer.call();
-			});
-			return defer;
-		},
-		function () {
-			var defer = Deferred();
-			filer.mkdir('dummy', false, function(dirEntry) {
-				window.DirectoryEntry = dirEntry.constructor.prototype;
-				window.DirectoryReader = dirEntry.createReader().constructor.prototype;
-				defer.call();
-			});
-			return defer;
-		},
+		filesystem.makeFileEntry.bind(filesystem),
+		filesystem.makeDirectoryEntry.bind(filesystem),
 		appInitialize
 	]);
 }).next(function () {

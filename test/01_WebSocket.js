@@ -4,17 +4,7 @@
  * License: GPL
  */
 
-describe('WebSocketFrame', function () {
-	describe('base', function () {
-		it('exist', function () {
-			expect(WebSocketFrame).to.be.an('Function');
-		});
-		it('new', function () {
-			var ws = new WebSocketFrame();
-			expect(ws).to.be.an('Object');
-			expect(ws).to.be.an.instanceof(WebSocketFrame);
-		});
-	});
+describeKlass(WebSocketFrame, function () {
 	describe('instance', function () {
 		var ws;
 		var dv = new DataView(new ArrayBuffer(20));
@@ -78,17 +68,7 @@ describe('WebSocketFrame', function () {
 	});
 });
 
-describe('WebSocketConnect', function () {
-	describe('base', function () {
-		it('exist', function () {
-			expect(WebSocketConnect).to.be.an('Function');
-		});
-		it('new', function () {
-			var ws = new WebSocketConnect();
-			expect(ws).to.be.an('Object');
-			expect(ws).to.be.an.instanceof(WebSocketConnect);
-		});
-	});
+describeKlass(WebSocketConnect, function () {
 	describe('klass', function () {
 		it('getAcceptKey', function () {
 			expect(WebSocketConnect.getAcceptKey('')).to.equal('Kfh9QIsMVZcl6xEPYxPHzW8SZ8w=');

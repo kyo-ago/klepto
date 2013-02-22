@@ -25,7 +25,7 @@ var settings = function ($scope) {
 			}
 			stor[key] = $scope[key];
 		});
-		utils.saveStorage(function () {
+		utils.saveStorage().next(function () {
 			if (require_restart) {
 				appEvents.emitEvent('windowReload');
 			}

@@ -4,17 +4,7 @@
  * License: GPL
  */
 
-describe('SocketTable', function () {
-	describe('base', function () {
-		it('exist', function () {
-			expect(SocketTable).to.be.an('Function');
-		});
-		it('new', function () {
-			var sockets = new SocketTable();
-			expect(sockets).to.be.an('Object');
-			expect(sockets).to.be.an.instanceof(SocketTable);
-		});
-	});
+describeKlass(SocketTable, function () {
 	describe('instance', function () {
 		var sockets = new SocketTable();
 		it('add', function () {

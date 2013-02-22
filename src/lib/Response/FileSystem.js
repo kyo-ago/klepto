@@ -16,7 +16,7 @@
 	prop.replaceContent = function (entry) {
 		var defer = Deferred();
 
-		FileEntry.file.call(entry, function (file) {
+		filesystem.getFile(entry).next(function (file) {
 			var fr = new FileReader();
 			fr.onload = function () {
 				defer.call({
@@ -107,16 +107,18 @@
 		entry = this.entry || entry;
 		this.entry = entry;
 		this.path = this.matcher = entry.fullPath;
+
 		var defer = Deferred();
-		filer.dir(this.entry, function (map) {
-			this.map = map;
-			defer.call(this);
-		}.bind(this));
+		this.setMap(defer.call.bind(defer, this));
 		return defer;
 	};
 	prop.refresh = function () {
-		filer.dir(this.entry, function (map) {
+		this.setMap();
+	};
+	prop.setMap = function (callback) {
+		filesystem.getDirMap(this.entry).next(function (map) {
 			this.map = map;
+			callback && callback();
 		}.bind(this));
 	};
 	prop.isMatch = function (path, callback) {
