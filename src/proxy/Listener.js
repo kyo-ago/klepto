@@ -12,8 +12,8 @@
 
 		this.option = utils.extend({
 			'type' : 'tcp',
-			'address' : '0.0.0.0',
-			'port' : 24888,
+			'address' : '127.0.0.1',
+			'port' : 8888,
 			'backlog' : 200,
 			'timeout' : 3000
 		}, option);

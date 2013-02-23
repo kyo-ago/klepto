@@ -52,8 +52,8 @@ function appInitialize () {
 
 	utils.storage = utils.storage || {};
 	utils.storage.settings = utils.extend({
-		'address' : '0.0.0.0',
-		'port' : 24888,
+		'address' : '127.0.0.1',
+		'port' : 8888,
 		'decode_gzip' : true
 	}, utils.storage.settings);
 
