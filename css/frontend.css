@@ -66,6 +66,27 @@ table {
 	border: 2px dashed #000;
 }
 
-.alert {
+.alert, .alert-success {
 	color: red;
+}
+.alert-success {
+	opacity: 0;
+	visibility: hidden;
+}
+.fadeout {
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-direction: normal;
+	-webkit-animation-duration: 2s;
+	-webkit-animation-timing-function: linear;
+	-webkit-animation-name: fadeout;
+}
+@-webkit-keyframes fadeout {
+	0%    {
+		opacity: 1;
+		visibility: visible;
+	}
+	100%  {
+		opacity: 0;
+		visibility: hidden;
+	}
 }

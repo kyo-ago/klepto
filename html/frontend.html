@@ -79,6 +79,9 @@ Listen Port<input type="text" ng-model="storage.port" ng-change="net_restart=tru
 Listen Address<input type="text" ng-model="storage.address" ng-change="net_restart=true"><br>
 Always decode gzip<input type="checkbox" ng-model="storage.decode_gzip"><br>
 <input type="submit" value="Save">
+<span ng-class="save_success" class="alert-success">
+	Save success.
+</span>
 </form>
 </div>
 
