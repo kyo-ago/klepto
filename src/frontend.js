@@ -21,7 +21,7 @@ Deferred.parallel(
 		return defer;
 	},
 	utils.loadStorage.bind(utils),
-	filesystem.init.bind(filesystem),
+	filesystem.init.bind(filesystem)
 ]).next(function () {
 	return Deferred.parallel([
 		filesystem.makeFileEntry.bind(filesystem),
@@ -75,7 +75,9 @@ function appInitialize () {
 	$('#autoResponderTab table').tableSorter({
 		'drop' : function (from, to) {
 			var rules = $autoResponder.rules;
-			rules.splice(from, 1, rules[to]);
+			var to_elem = rules[to];
+			var old = rules.splice(from, 1);
+			rules.splice(rules.indexOf(to_elem) + 1, 0, old[0]);
 		}
 	});
 

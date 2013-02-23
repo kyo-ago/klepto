@@ -35,8 +35,8 @@
 		if (elem.is(self.source)) {
 			return;
 		}
+		this.options.drop(self.source.index(), elem.index());
 		elem.after(self.source);
-		this.options.drop(elem.index(), self.source.index());
 	};
 
 	$.fn[Klass.name] = function (options) {
