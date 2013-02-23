@@ -5,17 +5,19 @@
 <title>local proxy</title>
 <link rel="stylesheet" href="/css/frontend.css">
 </head>
-<body>
+<body ng-init="selectTab='networkListTab'">
 
 <ul id="menu">
-<li><a href="#networkListTab">networkList</a></li>
-<li><a href="#autoResponderTab">autoResponder</a></li>
-<li><a href="#settingsTab">settings</a></li>
+<li><a href="#networkListTab" ng-click="selectTab='networkListTab'">networkList</a></li>
+<li><a href="#autoResponderTab" ng-click="selectTab='autoResponderTab'">autoResponder</a></li>
+<li><a href="#settingsTab" ng-click="selectTab='settingsTab'">settings</a></li>
 <!-- #menu --></ul>
 
 <div id="view">
 
-<div id="networkListTab" class="tab" ng-controller="networkListCtrl">
+<div id="networkListTab" class="tab" 
+     ng-controller="networkListCtrl"
+     ng-show="selectTab=='networkListTab'">
 <div id="connectLog">
 <table>
 <tr ng-repeat="log in logs">
@@ -30,37 +32,44 @@
 </div>
 <!-- #networkListTab --></div>
 
-<div id="autoResponderTab" class="tab" ng-controller="autoResponderCtrl">
-<div class="rulesTable" ng-show="rulesTable">
-<table ng-show="rulesTable" ng-init="rulesTable = true">
-<tr ng-repeat="rule in rules" draggable="true">
-<td><input type="checkbox" ng-model="rule.enable"></td>
-<td><input type="text" ng-model="rule.matcher"></td>
+<div id="autoResponderTab" class="tab"
+     ng-controller="autoResponderCtrl"
+     ng-show="selectTab=='autoResponderTab'"
+     ng-init="selectForm='ruleTable'">
+<div ng-show="selectForm=='ruleTable'">
+<table ng-init="rulesTable = true">
+<tr draggable="true" ng-repeat="rule in rules"
+    ng-class="{selected: rule.selected}"
+    ng-click="selectRule(rule);$event.stopPropagation()">
+<td><input type="checkbox" ng-model="rule.enable" ng-click="$event.stopPropagation()"></td>
+<td><input type="text" ng-model="rule.matcher" ng-click="$event.stopPropagation()"></td>
 <td>{{rule.path}}</td>
 </tr>
 </table>
-<input type="submit" value="addTemplate" ng-click="showForm('addTemplate')">
-<input type="submit" value="addFilter" ng-click="showForm('addFilter')">
+<input type="submit" value="addTemplate" ng-click="selectForm='templateForm'">
+<input type="submit" value="addFilter" ng-click="selectForm='filterForm'">
 <!-- .rulesTable --></div>
 <div class="addForms">
-<form ng-submit="addTemplateRule()" ng-show="addTemplate">
-Target path<input type="text"><br>
+<form ng-submit="addRule('ResponseTemplate')" ng-show="selectForm=='templateForm'">
+Target path<input type="text" ng-model="response_path"><br>
 Template value<br>
-<textarea></textarea><br>
+<textarea ng-model="response_value"></textarea><br>
 <input type="submit" value="Save">
-<input type="reset" value="Cancel" ng-click="hideForm()">
+<input type="reset" value="Cancel" ng-click="selectForm='ruleTable'">
 </form>
-<form ng-submit="addFilterRule()" ng-show="addFilter">
-Target path<input type="text"><br>
+<form ng-submit="addRule('ResponseFilter')" ng-show="selectForm=='filterForm'">
+Target path<input type="text" ng-model="response_path"><br>
 Filter code<br>
-<textarea></textarea><br>
+<textarea ng-model="response_value"></textarea><br>
 <input type="submit" value="Save">
-<input type="reset" value="Cancel" ng-click="hideForm()">
+<input type="reset" value="Cancel" ng-click="selectForm='ruleTable'">
 </form>
 <!-- .addForms --></div>
 <!-- #autoResponderTab --></div>
 
-<div id="settingsTab" class="tab" ng-controller="settingsCtrl">
+<div id="settingsTab" class="tab"
+     ng-controller="settingsCtrl"
+     ng-show="selectTab=='settingsTab'">
 <form ng-submit="applySettings()">
 Listen Port<input type="text" ng-model="port" data-change="restart"><br>
 Listen Address<input type="text" ng-model="address" data-change="restart"><br>

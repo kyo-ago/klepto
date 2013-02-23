@@ -5,7 +5,6 @@
  */
 
 var autoResponder = function ($scope) {
-	$scope.event = new EventEmitter();
 	$scope.rules = $scope.rules || [];
 	$scope.refresh_interval = 10000;
 	appEvents.addListener('backgroundLoad', function (key, rules) {
@@ -29,46 +28,62 @@ var autoResponder = function ($scope) {
 };
 
 function autoResponder_ui ($scope) {
-	$scope.changeForm = function (bool) {
-		$('#autoResponderTab .addForms [ng-show]').each(function () {
-			$scope[$(this).attr('ng-show')] = bool;
+	$scope.selectRule = function (target) {
+		$scope.rules.forEach(function (rule) {
+			rule.selected = target === rule;
 		});
 	};
-	$scope.showForm = function (target) {
-		$scope.changeForm(false);
-		$scope[target] = true;
-		$scope.rulesTable = false;
-	};
-	$scope.hideForm = function () {
-		$scope.changeForm(false);
-		$scope.rulesTable = true;
-	};
-	$scope.addRule = function (name, klass) {
-		var forms = $('#autoResponderTab .addForms form');
-		var form = forms.filter('[ng-show="' + name + '"]');
-		var path = form.find('[type="text"]').val();
-		var text = form.find('textarea').val();
-		var instance = new klass(path, text);
-		$scope.rulesTable = true;
-		$scope.changeForm(false);
+	$scope.addRule = function (klass_name) {
+		var path = $scope.response_path;
+		var text = $scope.response_value;
+		$scope.response_path = '';
+		$scope.response_value = '';
+		var instance = new window[klass_name](path, text);
 		$scope.applyRules([instance]);
-		Deferred.next(function () {
-			forms.find('[type="reset"]').click();
-		});
+		$scope.selectForm = 'ruleTable';
 	};
-	$scope.addTemplateRule = $scope.addRule.bind($scope, 'addTemplate', ResponseTemplate);
-	$scope.addFilterRule = $scope.addRule.bind($scope, 'addFilter', ResponseFilter);
+	$scope.unselected = function () {
+		$scope.$$phase ? exec() : $scope.$apply(exec);
+		function exec () {
+			$scope.rules.forEach(function (rule) {
+				rule.selected = false;
+			});
+		}
+	};
+	$scope.$on('hidden', $scope.unselected);
+	$scope.$on('click', $scope.unselected);
+	$scope.$on('keyup', function (ang, evn) {
+		if ($scope.selectForm !== 'ruleTable') {
+			return;
+		}
+		// 46 === delete key
+		if (evn.keyCode !== 46) {
+			return;
+		}
+		if ($(document.activeElement).is(':input')) {
+			return;
+		}
+		$scope.$$phase ? exec() : $scope.$apply(exec);
+		function exec () {
+			$scope.rules.filter(function (rule) {
+				return rule.selected;
+			}).forEach(function (rule) {
+				var idx = $scope.rules.indexOf(rule);
+				$scope.rules.splice(idx, 1);
+			});
+		}
+	});
 
 	$scope.inportDnDFiles = function (entries) {
-		$scope.hideForm();
+		$scope.selectForm = 'ruleTable';
 		Deferred.parallel(entries.map(function (entry) {
 			var klass = entry.isDirectory ? ResponseDirectory : ResponseFile;
 			return (new klass()).load(entry);
 		})).next($scope.applyRules);
 	};
 	$scope.applyRules = function (rules) {
-		$scope.$$phase ? add_rules() : $scope.$apply(add_rules);
-		function add_rules () {
+		$scope.$$phase ? exec() : $scope.$apply(exec);
+		function exec () {
 			$scope.rules = $scope.rules.concat(rules);
 			appEvents.emitEvent('backgroundSave', [
 				'autoResponderRules',

@@ -44,11 +44,11 @@ Deferred.parallel(
 function appInitialize () {
 	$('#menu a').on('click', function () {
 		var elem = angular.element($(this).attr('href'));
-		elem.show().siblings().hide().each(function () {
-			angular.element(this).scope().event.emitEvent('hidden');
+		elem.siblings().each(function () {
+			angular.element(this).scope().$emit('hidden');
 		});
-		elem.scope().event.emitEvent('visible');
-	}).first().click();
+		elem.scope().$emit('visible');
+	});
 
 	utils.storage = utils.storage || {};
 	utils.storage.settings = utils.extend({
@@ -59,6 +59,7 @@ function appInitialize () {
 
 	var $autoResponder = angular.element('#autoResponderTab').scope();
 	var $networkList = angular.element('#networkListTab').scope();
+	var $settings = angular.element('#settingsTab').scope();
 	(new Listener({
 		'address' : utils.storage.settings.address || '0.0.0.0',
 		'port' : (utils.storage.settings.port - 0) || 24888
@@ -95,7 +96,18 @@ function appInitialize () {
 			}));
 		})
 	;
-};
+	$('body')
+		.on('click', '.tab', function (event) {
+			var elem = angular.element('#'+$(this).attr('id'));
+			elem.scope().$emit(event.type, event);
+		})
+		.on('keyup', function (event) {
+			var tab = angular.element('body').scope().selectTab;
+			var elem = angular.element('#'+tab);
+			elem.scope().$emit(event.type, event);
+		})
+	;
+}
 
 angular.module('ng')
 	.controller('networkListCtrl', ['$scope', networkList])

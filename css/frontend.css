@@ -55,8 +55,9 @@ table {
 	width: 100%;
 }
 
-[draggable] {
-	cursor: move;
+.selected {
+	background-color: highlight;
+	color: highlighttext;
 }
 .dragstart {
 	opacity: 0.4;

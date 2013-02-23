@@ -5,7 +5,6 @@
  */
 
 var networkList = function ($scope) {
-	$scope.event = new EventEmitter();
 	$scope.log = {};
 	$scope.logs = [];
 	$scope.contextmenu_id = undefined;
@@ -93,5 +92,5 @@ var networkList = function ($scope) {
 		chrome.contextMenus.remove($scope.contextmenu_id);
 		delete $scope.contextmenu_id;
 	};
-	$scope.event.addListener('hidden', $scope.removeContextMenus);
+	$scope.$on('hidden', $scope.removeContextMenus);
 };

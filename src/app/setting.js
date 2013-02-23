@@ -5,7 +5,6 @@
  */
 
 var settings = function ($scope) {
-	$scope.event = new EventEmitter();
 	appEvents.addListener('init', function () {
 		$scope.$apply(function () {
 			var stor = utils.storage.settings;
