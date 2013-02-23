@@ -8,8 +8,8 @@
 
 var appEvents = new EventEmitter();
 var sandbox = $('#sandbox').get(0);
-Deferred.onerror = function () {
-	console.debug(arguments);
+Deferred.onerror = function (e) {
+	console.debug([e], e.stack);
 };
 jQuery.event.props.push('dataTransfer');
 var filesystem = new FileSystem();
@@ -49,6 +49,7 @@ function appInitialize () {
 		});
 		elem.scope().event.emitEvent('visible');
 	}).first().click();
+
 	utils.storage = utils.storage || {};
 	utils.storage.settings = utils.extend({
 		'address' : '0.0.0.0',
@@ -70,6 +71,13 @@ function appInitialize () {
 			$networkList.addLog(this);
 		}.bind(forwarder));
 	}).start();
+
+	$('#autoResponderTab table').tableSorter({
+		'drop' : function (from, to) {
+			var rules = $autoResponder.rules;
+			rules.splice(from, 1, rules[to]);
+		}
+	});
 
 	$(window)
 		.on('dragenter dragover', false)

@@ -33,7 +33,7 @@
 <div id="autoResponderTab" class="tab" ng-controller="autoResponderCtrl">
 <div class="rulesTable" ng-show="rulesTable">
 <table ng-show="rulesTable" ng-init="rulesTable = true">
-<tr ng-repeat="rule in rules">
+<tr ng-repeat="rule in rules" draggable="true">
 <td><input type="checkbox" ng-model="rule.enable"></td>
 <td><input type="text" ng-model="rule.matcher"></td>
 <td>{{rule.path}}</td>
@@ -92,6 +92,7 @@ Always decode gzip<input type="checkbox" ng-model="decode_gzip"><br>
 <script src="/src/lib/Command.js"></script>
 <script src="/src/lib/utils.js"></script>
 <script src="/src/lib/FileSystem.js"></script>
+<script src="/src/lib/jquery.table-sorter.js"></script>
 
 <script src="/src/lib/Response.js"></script>
 <script src="/src/lib/Response/FileSystem.js"></script>
