@@ -42,6 +42,9 @@ function autoResponder_ui ($scope) {
 		$scope.applyRules([instance]);
 		$scope.selectForm = 'ruleTable';
 	};
+	$scope.deleteRule = function (rule) {
+		$scope.rules.splice($scope.rules.indexOf(rule), 1);
+	};
 	$scope.unselected = function () {
 		$scope.$$phase ? exec() : $scope.$apply(exec);
 		function exec () {

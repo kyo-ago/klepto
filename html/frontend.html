@@ -44,6 +44,7 @@
 <td><input type="checkbox" ng-model="rule.enable" ng-click="$event.stopPropagation()"></td>
 <td><input type="text" ng-model="rule.matcher" ng-click="$event.stopPropagation()"></td>
 <td>{{rule.path}}</td>
+<td><input type="submit" value="del" ng-click="deleteRule(rule)"></td>
 </tr>
 </table>
 <input type="submit" value="addTemplate" ng-click="selectForm='templateForm'">
