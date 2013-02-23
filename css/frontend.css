@@ -65,3 +65,7 @@ table {
 .dragenter {
 	border: 2px dashed #000;
 }
+
+.alert {
+	color: red;
+}

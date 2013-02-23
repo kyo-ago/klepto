@@ -11,23 +11,19 @@ var settings = function ($scope) {
 			Object.keys(stor).forEach(function (key) {
 				$scope[key] = stor[key];
 			});
+			$scope.storage = utils.storage.settings;
 		});
 	});
 	$scope.applySettings = function () {
-		var stor = utils.storage.settings;
-		var require_restart = false;
-		var form = $('#settingsTab form');
-		Object.keys(stor).forEach(function (key) {
-			var change = form.find('[ng-model="' + key + '"]').attr('data-change');
-			if (!require_restart && change === 'restart' && stor[key] !== $scope[key]) {
-				require_restart = true;
-			}
-			stor[key] = $scope[key];
-		});
 		utils.saveStorage().next(function () {
-			if (require_restart) {
-				appEvents.emitEvent('windowReload');
+			if (!$scope.net_restart) {
+				return;
 			}
+			var $body = angular.element('body').scope();
+			$body.networkRestart();
 		});
+	};
+	$scope.portblocking = function () {
+		$scope.portblocking_alert = true;
 	};
 };

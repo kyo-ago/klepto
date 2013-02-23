@@ -60,18 +60,32 @@ function appInitialize () {
 	var $autoResponder = angular.element('#autoResponderTab').scope();
 	var $networkList = angular.element('#networkListTab').scope();
 	var $settings = angular.element('#settingsTab').scope();
-	(new Listener({
-		'address' : utils.storage.settings.address || '0.0.0.0',
-		'port' : (utils.storage.settings.port - 0) || 24888
-	})).addListener('startForwarder', function (forwarder) {
-		forwarder.addListener('browserRead', function () {
-			$autoResponder.responseRequest(this);
-		}.bind(forwarder)).addListener('userFilter', function () {
-			$autoResponder.userFilter(this);
-		}.bind(forwarder)).addListener('done', function () {
-			$networkList.addLog(this);
-		}.bind(forwarder));
-	}).start();
+	var $body = angular.element('body').scope();
+
+	$body.networkStart = function () {
+		$body.listener = new Listener({
+			'address' : utils.storage.settings.address || '0.0.0.0',
+			'port' : (utils.storage.settings.port - 0) || 24888
+		});
+		$body.listener.addListener('startForwarder', function (forwarder) {
+			forwarder.addListener('browserRead', function () {
+				$autoResponder.responseRequest(this);
+			}.bind(forwarder)).addListener('userFilter', function () {
+				$autoResponder.userFilter(this);
+			}.bind(forwarder)).addListener('done', function () {
+				$networkList.addLog(this);
+			}.bind(forwarder));
+		}).addListener('portblocking', function () {
+			$settings.portblocking();
+			$body.$apply('selectTab="settingsTab"')
+		}).start();
+	};
+	$body.networkRestart = function () {
+		$body.listener.stop();
+		SocketTable.allDestroy();
+		$body.networkStart();
+	};
+	$body.networkStart();
 
 	$('#autoResponderTab table').tableSorter({
 		'drop' : function (from, to) {
@@ -102,7 +116,7 @@ function appInitialize () {
 			elem.scope().$emit(event.type, event);
 		})
 		.on('keyup', function (event) {
-			var tab = angular.element('body').scope().selectTab;
+			var tab = $body.selectTab;
 			var elem = angular.element('#'+tab);
 			elem.scope().$emit(event.type, event);
 		})

@@ -9,7 +9,7 @@
 
 	var Klass = function Waterfall () {
 		// this is not execute.(overwrite child class)
-		this.isStop = false;
+		this._isStop = false;
 	};
 	Klass.inherit(EventEmitter);
 	var prop = Klass.prototype;
@@ -44,9 +44,9 @@
 	};
 	prop.waterfall = function (methods) {
 		this.deferred = Deferred.loop(methods.length, function (num) {
-			var isStop = this.isStop;
-			this.isStop = false;
-			return isStop
+			var _isStop = this._isStop;
+			this._isStop = false;
+			return _isStop
 				? this.waterfall_stop()
 				: this.waterfall_loop(methods[num])
 			;
@@ -76,8 +76,11 @@
 		return this;
 	};
 	prop.stop = function () {
-		this.isStop = true;
+		this._isStop = true;
 		return this;
+	};
+	prop.isStop = function () {
+		return this._isStop;
 	};
 
 	exports[Klass.name] = Klass;

@@ -40,6 +40,11 @@
 			var port = this.option.port;
 			var backlog = this.option.backlog;
 			chrome.socket.listen(sid, addr, port, backlog, function (resultCode) {
+				if (resultCode === -10) {
+					this.sockets.removeAll();
+					this.emitEvent('portblocking');
+					return;
+				}
 				if (resultCode !== 0) {
 					this.emitEvent('error', arguments);
 					return;
@@ -48,8 +53,14 @@
 			}.bind(this));
 		},
 		function listenerAccept () {
+			if (this.isStop()) {
+				return;
+			}
 			var sid = this.sockets.get('listener');
 			chrome.socket.accept(sid, function (info) {
+				if (this.isStop()) {
+					return;
+				}
 				if (info.resultCode === -2) {
 					return;
 				}
