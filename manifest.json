@@ -1,11 +1,11 @@
 {
 	"name": "Klepto proxy",
-	"version": "0.1",
+	"version": "1.0",
 	"manifest_version": 2,
-	"minimum_chrome_version": "24",
+	"minimum_chrome_version": "25",
 	"icons": {
-		"16": "/img/logo.png",
-		"128": "/img/logo.png"
+		"16": "logo.png",
+		"128": "logo.png"
 	},
 	"app": {
 		"background": {
@@ -18,7 +18,6 @@
 		"pages" : ["/html/sandbox.html"]
 	},
 	"permissions": [
-		"experimental",
 		"storage",
 		"contextMenus",
 		{"fileSystem": ["write"]},
