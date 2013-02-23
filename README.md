@@ -11,8 +11,7 @@ Currently support for MacOS only(Windows environment is broken)
 Using
 -------
 
- * Go to chrome://flags, find "Experimental Extension APIs", click its "Enable" link, and restart Chrome.
- * Go to chrome://settings/, find "Change proxy settings", change proxy setting to localhost:24888.
+ * Go to chrome://settings/, find "Change proxy settings", change proxy setting to localhost:8888.
  * Go to Chrome new tab page, click Klepto app icon.
  * Drag & Drop local file to Klepto window.
 
