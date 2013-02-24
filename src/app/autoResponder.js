@@ -60,7 +60,7 @@ function autoResponder_ui ($scope) {
 		// 46 === delete key
 		'keyCode' : 46,
 		'notInput' : true
-	}, function (ang, evn) {
+	}, function () {
 		if ($scope.selectForm !== 'ruleTable') {
 			return;
 		}
@@ -74,12 +74,13 @@ function autoResponder_ui ($scope) {
 	$('#autoResponderTab #rulesTable table').contextMenus('tr', {
 		'title' : 'Delete responder(Del)',
 		'id' : 'delete_responder',
-		'contexts' : ['editable'],
+		'contexts' : ['all'],
 		'callback' : function (chevn, jqevn) {
 			var target = $(jqevn.currentTarget);
-			$scope.deleteLog(target.find('td').eq(0).html()|0);
-			$scope.$apply();
-
+			$scope.$$phase ? exec() : $scope.$apply(exec);
+			function exec () {
+				$scope.deleteRule($scope.rules[target.index()]);
+			}
 		}
 	});
 
