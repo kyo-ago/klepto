@@ -11,10 +11,11 @@ var settings = function ($scope) {
 			Object.keys(stor).forEach(function (key) {
 				$scope[key] = stor[key];
 			});
-			$scope.storage = utils.storage.settings;
+			$scope.storage = utils.extend({}, utils.storage.settings);
 		});
 	});
 	$scope.applySettings = function () {
+		utils.storage.settings = utils.extend(utils.storage.settings, $scope.storage);
 		utils.saveStorage().next(function () {
 			$scope.$apply('save_success="fadeout"');
 			setTimeout($scope.$apply.bind($scope, 'save_success=""'), 2000);
