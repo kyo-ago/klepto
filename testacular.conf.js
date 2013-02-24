@@ -10,16 +10,20 @@ basePath = '.';
 files = [
   MOCHA,
   MOCHA_ADAPTER,
+  'test/lib/chai.js',
+  'test/lib/sinon-chai.js',
+  'test/lib/sinon.js',
+  'test/lib/*.js',
+  'test/00_mock.js',
+
   'lib/*.js',
   'src/app/*.js',
   'src/lib/*.js',
   'src/lib/**/*.js',
   'src/proxy/Waterfall.js',
   'src/proxy/*.js',
-  'test/lib/chai.js',
-  'test/lib/sinon-chai.js',
-  'test/lib/sinon.js',
-  'test/lib/*.js',
+
+  'test/00_base.js',
   'test/*.js'
 ];
 

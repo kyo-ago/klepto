@@ -5,12 +5,6 @@
  */
 
 var expect = chai.expect;
-var chrome = {
-	'socket' : {
-		'disconnect' : function () {},
-		'destroy' : function () {}
-	}
-};
 sinon.log = console.log.bind(console);
 Deferred.onerror = function (e) {
 	throw e;

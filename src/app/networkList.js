@@ -7,7 +7,7 @@
 var networkList = function ($scope) {
 	$scope.log = {};
 	$scope.logs = [];
-	$scope.contextmenu_id = undefined;
+	$scope.contextmenu_id = [];
 	var TRUNCATE_CHARACTERS_SIZE = 128;
 	var TRUNCATE_TEXT = '*** Klepto: truncated at ' + TRUNCATE_CHARACTERS_SIZE + ' characters. ***';
 
@@ -19,6 +19,10 @@ var networkList = function ($scope) {
 				'log' : log
 			});
 		});
+	};
+	$scope.clearLog = function () {
+		$scope.log = {};
+		$scope.logs = [];
 	};
 
 	$scope.showInspector = function (_log) {
@@ -54,43 +58,48 @@ var networkList = function ($scope) {
 		log.responsetText = header + '\r\n\r\n' + body;
 	};
 
-	$('#networkListTab #inspector #response').on('contextmenu', function () {
-		var log = $scope.log;
-		if (utils.storage.settings.decode_gzip) {
+	$scope.$on('keyup', function (ang, evn) {
+		// 46 === X
+		if (!evn.ctrlKey || evn.keyCode !== 88) {
 			return;
 		}
-		if (log.constructor === Object) {
+		if ($(document.activeElement).is(':input')) {
 			return;
 		}
-		if (log.response.getHeader('content-encoding') !== 'gzip') {
-			return;
+		$scope.$$phase ? $scope.clearLog() : $scope.$apply($scope.clearLog);
+	})
+	$('#networkListTab #connectLog table').contextMenus('tr', {
+		'title' : 'Delete log',
+		'id' : 'delete_log',
+		'contexts' : ['page', 'link'],
+		'callback' : function () {
+console.debug(this, arguments);
 		}
-		if ($scope.contextmenu_id) {
-			return;
-		}
-		$scope.contextmenu_id = chrome.contextMenus.create({
-			'title' : 'Decode gzip',
-			'id' : 'decode_gzip',
-			'contexts' : ['editable']
-		});
 	});
-	chrome.contextMenus.onClicked.addListener(function (evn) {
-		var log = $scope.log;
-		if ($scope.contextmenu_id !== evn.menuItemId) {
-			return;
+	$('#networkListTab #inspector #response').contextMenus({
+		'title' : 'Decode gzip',
+		'id' : 'decode_gzip',
+		'contexts' : ['editable'],
+		'filter' : function () {
+			var log = $scope.log;
+			if (utils.storage.settings.decode_gzip) {
+				return false;
+			}
+			if (log.constructor === Object) {
+				return false;
+			}
+			if (log.response.getHeader('content-encoding') !== 'gzip') {
+				return false;
+			}
+			return true;
+		},
+		'callback' : function () {
+			var log = $scope.log;
+			var body = log.response.getBodyText();
+			var gunzip = new Zlib.Gunzip(utils.t2u8(body));
+			log.responsetText = log.response.getHeaderText() + '\r\n\r\n' + utils.decodeUtf8(utils.u82t(gunzip.decompress()));
+			$scope.$apply();
 		}
-		$scope.removeContextMenus();
-		var body = log.response.getBodyText();
-		var gunzip = new Zlib.Gunzip(utils.t2u8(body));
-		log.responsetText = log.response.getHeaderText() + '\r\n\r\n' + utils.decodeUtf8(utils.u82t(gunzip.decompress()));
-		$scope.$apply();
 	});
-	$scope.removeContextMenus = function () {
-		if (!$scope.contextmenu_id) {
-			return;
-		}
-		chrome.contextMenus.remove($scope.contextmenu_id);
-		delete $scope.contextmenu_id;
-	};
-	$scope.$on('hidden', $scope.removeContextMenus);
+	$scope.$on('hidden',$.contextMenus.removeAll);
 };
