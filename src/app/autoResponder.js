@@ -54,26 +54,32 @@ function autoResponder_ui ($scope) {
 		}
 	};
 	$scope.$on('hidden', $scope.unselected);
+	$scope.$on('hidden',$.contextMenus.removeAll);
 	$scope.$on('click', $scope.unselected);
-	$scope.$on('keyup', function (ang, evn) {
+	$scope.$on('keyup', utils.keyup($scope, {
+		// 46 === delete key
+		'keyCode' : 46,
+		'notInput' : true
+	}, function (ang, evn) {
 		if ($scope.selectForm !== 'ruleTable') {
 			return;
 		}
-		// 46 === delete key
-		if (evn.keyCode !== 46) {
-			return;
-		}
-		if ($(document.activeElement).is(':input')) {
-			return;
-		}
-		$scope.$$phase ? exec() : $scope.$apply(exec);
-		function exec () {
-			$scope.rules.filter(function (rule) {
-				return rule.selected;
-			}).forEach(function (rule) {
-				var idx = $scope.rules.indexOf(rule);
-				$scope.rules.splice(idx, 1);
-			});
+		$scope.rules.filter(function (rule) {
+			return rule.selected;
+		}).forEach(function (rule) {
+			var idx = $scope.rules.indexOf(rule);
+			$scope.rules.splice(idx, 1);
+		});
+	}));
+	$('#autoResponderTab #rulesTable table').contextMenus('tr', {
+		'title' : 'Delete responder(Del)',
+		'id' : 'delete_responder',
+		'contexts' : ['editable'],
+		'callback' : function (chevn, jqevn) {
+			var target = $(jqevn.currentTarget);
+			$scope.deleteLog(target.find('td').eq(0).html()|0);
+			$scope.$apply();
+
 		}
 	});
 
