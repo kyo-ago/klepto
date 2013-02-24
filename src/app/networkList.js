@@ -74,16 +74,14 @@ var networkList = function ($scope) {
 		log.responsetText = header + '\r\n\r\n' + body;
 	};
 
-	$scope.$on('keyup', function (ang, evn) {
+	$scope.$on('keyup', utils.keyup($scope, {
 		// 46 === X
-		if (!evn.ctrlKey || evn.keyCode !== 88) {
-			return;
-		}
-		if ($(document.activeElement).is(':input')) {
-			return;
-		}
-		$scope.$$phase ? $scope.clearLog() : $scope.$apply($scope.clearLog);
-	})
+		'keyCode' : 88,
+		'ctrlKey' : true,
+		'notInput' : true
+	}, function (ang, evn) {
+		$scope.clearLog();
+	}));
 	$('#networkListTab #connectLog table').contextMenus('tr', [
 		{
 			'title' : 'Delete log',

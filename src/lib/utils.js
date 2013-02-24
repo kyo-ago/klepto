@@ -87,6 +87,22 @@ utils.parseQuery = function (strs) {
 	});
 	return result;
 };
+utils.keyup = function ($scope, param, callback) {
+	return function (ang, evn) {
+		var notInput = param['notInput'];
+		delete param['notInput'];
+		var some = Object.keys(param).some(function (key) {
+			return param[key] !== evn[key];
+		});
+		if (some) {
+			return;
+		}
+		if (notInput && $(document.activeElement).is(':input')) {
+			return;
+		}
+		$scope.$$phase ? callback() : $scope.$apply(callback);
+	};
+};
 utils.storage = {};
 utils.saveStorage = function () {
 	var defer = Deferred();

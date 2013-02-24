@@ -36,8 +36,8 @@
      ng-controller="autoResponderCtrl"
      ng-show="selectTab=='autoResponderTab'"
      ng-init="selectForm='ruleTable'">
-<div ng-show="selectForm=='ruleTable'">
-<table ng-init="rulesTable = true">
+<div ng-show="selectForm=='ruleTable'" id="rulesTable">
+<table ng-init="rulesTable=true">
 <tr draggable="true" ng-repeat="rule in rules"
     ng-class="{selected: rule.selected}"
     ng-click="selectRule(rule);$event.stopPropagation()">
@@ -49,7 +49,7 @@
 </table>
 <input type="submit" value="addTemplate" ng-click="selectForm='templateForm'">
 <input type="submit" value="addFilter" ng-click="selectForm='filterForm'">
-<!-- .rulesTable --></div>
+<!-- #rulesTable --></div>
 <div class="addForms">
 <form ng-submit="addRule('ResponseTemplate')" ng-show="selectForm=='templateForm'">
 Target path<input type="text" ng-model="response_path"><br>
