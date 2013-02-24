@@ -27,10 +27,8 @@ describe('jquery.contextmenus', function () {
 		});
 		it('init', function () {
 			instance.trigger('contextmenu');
-			expect($.fn.contextMenus.items).to.eql([{
-				'id' : 'dummy',
-				'options' : options
-			}]);
+			expect($.contextMenus.items.length).to.eql(1);
+			expect($.contextMenus.items[0].id).to.eql('dummy');
 
 			instance.trigger('contextmenu');
 			expect($.fn.contextMenus.items.length).to.eql(1);
