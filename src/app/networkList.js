@@ -20,6 +20,22 @@ var networkList = function ($scope) {
 			});
 		});
 	};
+	$scope.getLog = function (id) {
+		return $scope.logs.filter(function (log) {
+			return log.id === id;
+		})[0];
+	};
+	$scope.deleteLog = function (log) {
+		if ('number' === typeof log) {
+			log = $scope.getLog(log);
+		}
+		if ($scope.log === log) {
+			$scope.log = {};
+		}
+		$scope.logs = $scope.logs.filter(function (log_) {
+			return log_ !== log;
+		});
+	};
 	$scope.clearLog = function () {
 		$scope.log = {};
 		$scope.logs = [];
@@ -68,14 +84,27 @@ var networkList = function ($scope) {
 		}
 		$scope.$$phase ? $scope.clearLog() : $scope.$apply($scope.clearLog);
 	})
-	$('#networkListTab #connectLog table').contextMenus('tr', {
-		'title' : 'Delete log',
-		'id' : 'delete_log',
-		'contexts' : ['page', 'link'],
-		'callback' : function () {
-console.debug(this, arguments);
+	$('#networkListTab #connectLog table').contextMenus('tr', [
+		{
+			'title' : 'Delete log',
+			'id' : 'delete_log',
+			'contexts' : ['page', 'link'],
+			'callback' : function (chevn, jqevn) {
+				var target = $(jqevn.currentTarget);
+				$scope.deleteLog(target.find('td').eq(0).html()|0);
+				$scope.$apply();
+			}
+		},
+		{
+			'title' : 'Delete all log',
+			'id' : 'delete_all_log',
+			'contexts' : ['page', 'link'],
+			'callback' : function (chevn, jqevn) {
+				$scope.clearLog();
+				$scope.$apply();
+			}
 		}
-	});
+	]);
 	$('#networkListTab #inspector #response').contextMenus({
 		'title' : 'Decode gzip',
 		'id' : 'decode_gzip',

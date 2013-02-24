@@ -17,7 +17,7 @@
 		if (!$.isArray(options)) {
 			options = [options];
 		}
-		var callback = Klass.init.bind(this, options);
+		var callback = Klass.callback.bind(this, options);
 		if (selector) {
 			this.on('contextmenu', selector, callback);
 		} else {
@@ -26,7 +26,7 @@
 		return this;
 	};
 	Klass.items = [];
-	Klass.init = function (options, event) {
+	Klass.callback = function (options, event) {
 		var filters = options.filter(function (opt) {
 			return !opt.filter || opt.filter.call(this, event);
 		}.bind(this));
@@ -34,9 +34,9 @@
 			return;
 		}
 		Klass.removeAll();
-		filters.forEach(Klass.register.bind(this));
+		filters.forEach(Klass.register.bind(this, event));
 	};
-	Klass.register = function (opt) {
+	Klass.register = function (event, opt) {
 		var param = Klass.makeParam(opt, [
 			'type', 'id', 'title', 'checked', 'contexts',
 			'parentId', 'onclick', 'documentUrlPatterns',
@@ -48,7 +48,8 @@
 		}
 		Klass.items.push({
 			'id' : id,
-			'options' : opt
+			'options' : opt,
+			'event' : event
 		});
 	};
 	Klass.makeParam = function (opt, keys) {
@@ -91,7 +92,7 @@
 			if (!filter.options.callback) {
 				return;
 			}
-			filter.options.callback();
+			filter.options.callback(evn, filter.event);
 		});
 	});
 	document.body.addEventListener('contextmenu', Klass.removeAll, true);
