@@ -96,7 +96,7 @@ var networkList = function ($scope) {
 			}
 		},
 		{
-			'title' : 'Delete all log',
+			'title' : 'Delete all log(X)',
 			'id' : 'delete_all_log',
 			'contexts' : ['page', 'link'],
 			'callback' : function (chevn, jqevn) {
