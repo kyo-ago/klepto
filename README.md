@@ -11,7 +11,8 @@ Currently support for MacOS only(Windows environment is broken)
 Using
 -------
 
- * Go to chrome://settings/, find "Change proxy settings", change proxy setting to localhost:8888.
+ * Install [Klepto-extension](https://chrome.google.com/webstore/detail/klepto-extension/emkledinokolepadojgcekkigimhockg)
+ * Install [Klepto proxy](https://chrome.google.com/webstore/detail/klepto-proxy/ldjiglaablmjadhcnmocnccmocibmokp)
  * Go to Chrome new tab page, click Klepto app icon.
  * Drag & Drop local file to Klepto window.
 
