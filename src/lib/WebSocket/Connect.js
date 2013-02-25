@@ -25,7 +25,7 @@
 	prop.read = function () {
 		chrome.socket.read(this.socket, function (evn) {
 			if (!evn.data.byteLength) {
-				this.read();
+				this.emitEvent('close');
 				return;
 			}
 			var frame = (new WebSocketFrame()).parse(evn.data);
