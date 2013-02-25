@@ -54,6 +54,9 @@ table {
 	height: 50%;
 	width: 100%;
 }
+#autoResponderTab table {
+	text-align: center;
+}
 
 .selected {
 	background-color: highlight;
