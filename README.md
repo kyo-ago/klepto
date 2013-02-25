@@ -11,8 +11,8 @@ Currently support for MacOS only(Windows environment is broken)
 Using
 -------
 
- * Install [Klepto-extension](https://chrome.google.com/webstore/detail/klepto-extension/emkledinokolepadojgcekkigimhockg)
  * Install [Klepto proxy](https://chrome.google.com/webstore/detail/klepto-proxy/ldjiglaablmjadhcnmocnccmocibmokp)
+ * Install [Klepto-extension](https://chrome.google.com/webstore/detail/klepto-extension/emkledinokolepadojgcekkigimhockg)
  * Go to Chrome new tab page, click Klepto app icon.
  * Drag & Drop local file to Klepto window.
 
