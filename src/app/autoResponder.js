@@ -138,11 +138,18 @@ function autoResponder_forwarder ($scope) {
 				var enable = rule.saveData;
 				enable = enable || rule.isEnabled('responseRequest');
 				enable = enable || rule.autoSaveEnable();
-				return enable && rule.isMatch(file.path, function (match) {
+				if (!enable) {
+					return false;
+				}
+				return rule.isMatch(file.path, function (match) {
 					rule.saveData(file.data, match).next(cmd.sendMessage.bind(cmd, 'saveFile'));
 				});
 			});
 		}.bind(this));
+		$scope.$emit('commandOpen');
+		cmd.addListener('close' , function () {
+			$scope.$emit('commandClose');
+		});
 		cmd.response(fwd)
 			.next(fwd.setResponse.bind(fwd))
 			.next(fwd.browserWrite.bind(fwd, cmd.connect.bind(cmd, fwd)))

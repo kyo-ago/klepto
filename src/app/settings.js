@@ -29,4 +29,12 @@ var settings = function ($scope) {
 	$scope.portblocking = function () {
 		$scope.portblocking_alert = true;
 	};
+	$scope.$on('commandOpen', function () {
+		$scope.$apply('ApiClientStatus="Klepto-extension Connect"');
+		$scope.$parent.$apply('hilightTab="settingsTab"');
+	});
+	$scope.$on('commandClose', function () {
+		$scope.$apply('ApiClientStatus=""');
+		$scope.$parent.$apply('hilightTab=""');
+	});
 };

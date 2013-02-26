@@ -26,6 +26,30 @@ table {
 	display: inline-block;
 	width: 100%;
 }
+#menu .hilightTab {
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-direction: normal;
+	-webkit-animation-duration: 3s;
+	-webkit-animation-timing-function: linear;
+	-webkit-animation-name: hilightTab;
+}
+@-webkit-keyframes hilightTab {
+	0% {
+		background-color: rgba(255, 173, 147, 0);
+	}
+	25% {
+		background-color: rgba(255, 173, 147, 1);
+	}
+	50% {
+		background-color: rgba(255, 173, 147, 0);
+	}
+	75% {
+		background-color: rgba(255, 173, 147, 1);
+	}
+	100% {
+		background-color: rgba(255, 173, 147, 0);
+	}
+}
 
 #view, .tab {
 	overflow: hidden;
@@ -54,8 +78,16 @@ table {
 	height: 50%;
 	width: 100%;
 }
+
+#autoResponderTab #rulesTable {
+	height: 90%;
+}
 #autoResponderTab table {
 	text-align: center;
+}
+#autoResponderTab #dropHere {
+	font-size: 5em;
+	height: 100%;
 }
 
 .selected {
@@ -84,11 +116,11 @@ table {
 	-webkit-animation-name: fadeout;
 }
 @-webkit-keyframes fadeout {
-	0%    {
+	0% {
 		opacity: 1;
 		visibility: visible;
 	}
-	100%  {
+	100% {
 		opacity: 0;
 		visibility: hidden;
 	}

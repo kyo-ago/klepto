@@ -67,7 +67,10 @@
 		var fwd = forwarder;
 		var socket = fwd.sockets.get('browser');
 		this.ws = (new WebSocketConnect()).connect(socket);
-		this.ws.addListener('close', fwd.disconnect.bind(fwd));
+		this.ws.addListener('close', function () {
+			fwd.disconnect();
+			this.emitEvent('close');
+		}.bind(this));
 		this.ws.addListener('read', function (data) {
 			var param = JSON.parse(data);
 			if (param.type = 'save') {

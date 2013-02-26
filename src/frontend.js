@@ -62,6 +62,11 @@ function appInitialize () {
 	var $settings = angular.element('#settingsTab').scope();
 	var $body = angular.element('body').scope();
 
+	['commandOpen', 'commandClose'].forEach(function (name) {
+		$autoResponder.$on(name, function () {
+			$settings.$emit(name);
+		});
+	});
 	$body.networkStart = function () {
 		$body.listener = new Listener({
 			'address' : utils.storage.settings.address || '0.0.0.0',

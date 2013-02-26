@@ -8,9 +8,15 @@
 <body ng-init="selectTab='networkListTab'">
 
 <ul id="menu">
-<li><a href="#networkListTab" ng-click="selectTab='networkListTab'">networkList</a></li>
-<li><a href="#autoResponderTab" ng-click="selectTab='autoResponderTab'">autoResponder</a></li>
-<li><a href="#settingsTab" ng-click="selectTab='settingsTab'">settings</a></li>
+<li ng-class="{hilightTab:hilightTab=='networkListTab'}">
+	<a href="#networkListTab" ng-click="selectTab='networkListTab'">networkList</a>
+</li>
+<li ng-class="{hilightTab:hilightTab=='autoResponderTab'}">
+	<a href="#autoResponderTab" ng-click="selectTab='autoResponderTab'">autoResponder</a>
+</li>
+<li ng-class="{hilightTab:hilightTab=='settingsTab'}">
+	<a href="#settingsTab" ng-click="selectTab='settingsTab'">settings</a>
+</li>
 <!-- #menu --></ul>
 
 <div id="view">
@@ -37,7 +43,7 @@
      ng-show="selectTab=='autoResponderTab'"
      ng-init="selectForm='ruleTable'">
 <div ng-show="selectForm=='ruleTable'" id="rulesTable">
-<table ng-init="rulesTable=true">
+<table ng-init="rulesTable=true" ng-show="rules.length">
 <thead>
 <tr><th>enable</th><th>matr url</th><th>file name</th><th>auto save</th><th>del</th></tr>
 </thead>
@@ -53,6 +59,7 @@
 </tr>
 </tbody>
 </table>
+<div id="dropHere" ng-hide="rules.length">Drop local file here!</div>
 <input type="submit" value="addTemplate" ng-click="selectForm='templateForm'">
 <input type="submit" value="addFilter" ng-click="selectForm='filterForm'">
 <!-- #rulesTable --></div>
@@ -89,6 +96,7 @@ Always decode gzip<input type="checkbox" ng-model="storage.decode_gzip"><br>
 	Save success.
 </span>
 </form>
+<div ng-show="ApiClientStatus">{{ApiClientStatus}}</div>
 </div>
 
 <!-- #view --></div>
