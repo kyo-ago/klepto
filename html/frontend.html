@@ -38,14 +38,20 @@
      ng-init="selectForm='ruleTable'">
 <div ng-show="selectForm=='ruleTable'" id="rulesTable">
 <table ng-init="rulesTable=true">
+<thead>
+<tr><th>enable</th><th>matr url</th><th>file name</th><th>auto save</th><th>del</th></tr>
+</thead>
+<tbody>
 <tr draggable="true" ng-repeat="rule in rules"
     ng-class="{selected: rule.selected}"
     ng-click="selectRule(rule);$event.stopPropagation()">
 <td><input type="checkbox" ng-model="rule.enable" ng-click="$event.stopPropagation()"></td>
 <td><input type="text" ng-model="rule.matcher" ng-click="$event.stopPropagation()"></td>
 <td>{{rule.path}}</td>
+<td><input type="checkbox" ng-model="rule.autoSave" ng-click="$event.stopPropagation()"></td>
 <td><input type="submit" value="del" ng-click="deleteRule(rule)"></td>
 </tr>
+</tbody>
 </table>
 <input type="submit" value="addTemplate" ng-click="selectForm='templateForm'">
 <input type="submit" value="addFilter" ng-click="selectForm='filterForm'">
@@ -124,7 +130,7 @@ Always decode gzip<input type="checkbox" ng-model="storage.decode_gzip"><br>
 
 <script src="/src/app/autoResponder.js"></script>
 <script src="/src/app/networkList.js"></script>
-<script src="/src/app/setting.js"></script>
+<script src="/src/app/settings.js"></script>
 
 <script src="/src/frontend.js"></script>
 </body>

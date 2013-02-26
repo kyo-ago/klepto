@@ -16,6 +16,9 @@
 	prop.isEnabled = function (type) {
 		return this.enable && this.type === type;
 	};
+	prop.autoSaveEnable = function () {
+		return this.autoSave;
+	};
 	prop.replaceContent = function () {};
 	prop.copy = function (instance) {
 		['enable', 'matcher', 'filter', 'entry'].forEach(function (key) {

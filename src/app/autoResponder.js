@@ -135,7 +135,9 @@ function autoResponder_forwarder ($scope) {
 		var cmd = new ResponseCommand();
 		cmd.addListener('save', function (file) {
 			$scope.rules.some(function (rule) {
-				var enable = rule.isEnabled('responseRequest') && rule.saveData;
+				var enable = rule.saveData;
+				enable = enable || rule.isEnabled('responseRequest');
+				enable = enable || rule.autoSaveEnable();
 				return enable && rule.isMatch(file.path, function (match) {
 					rule.saveData(file.data, match).next(cmd.sendMessage.bind(cmd, 'saveFile'));
 				});
