@@ -14,7 +14,19 @@
 	var prop = Klass.prototype;
 
 	Klass.isMatch = function (forwarder) {
-		return ~['localhost', '127.0.0.1'].indexOf(forwarder.location.hostname);
+		var host = forwarder.location.hostname;
+		if (!~['localhost', '127.0.0.1'].indexOf(host)) {
+			return false;
+		}
+		var origin = forwarder.request.getHeader('origin');
+		var origins = origin.split('://');
+		if (origins[0] !== 'chrome-extension') {
+			return false;
+		}
+		if (!~['digfhfmklpnbefbcfgbkbndfoahkgfhh', 'emkledinokolepadojgcekkigimhockg'].indexOf(origins[1])) {
+			return false;
+		}
+		return true;
 	};
 	prop.response = function (forwarder) {
 		var fwd = forwarder;
