@@ -6,7 +6,8 @@
 
 var autoResponder = function ($scope) {
 	$scope.rules = $scope.rules || [];
-	$scope.refresh_interval = 10000;
+	$scope.commands = [];
+	$scope.refresh_interval = 5000;
 	appEvents.addListener('backgroundLoad', function (key, rules) {
 		if (key !== 'autoResponderRules') {
 			return;
@@ -18,13 +19,9 @@ var autoResponder = function ($scope) {
 			return instance.copy(rule).load();
 		})).next($scope.applyRules);
 	});
-	$scope.interval = setInterval(function () {
-		$scope.rules.forEach(function (rule) {
-			rule.refresh && rule.refresh();
-		});
-	}, $scope.refresh_interval);
 	autoResponder_ui($scope);
 	autoResponder_forwarder($scope);
+	$scope.interval = setInterval($scope.intervalUpdate, $scope.refresh_interval);
 };
 
 function autoResponder_ui ($scope) {
@@ -52,6 +49,28 @@ function autoResponder_ui ($scope) {
 				rule.selected = false;
 			});
 		}
+	};
+	$scope.intervalUpdate = function () {
+		Deferred.parallel($scope.rules.map(function (rule) {
+			if (!rule.refresh) {
+				return;
+			}
+			var defer = Deferred();
+			rule.refresh(function () {
+				if (!this.autoReload) {
+					return;
+				}
+				this.checkUpdate(defer.call.bind(defer));
+			});
+			return defer;
+		})).next(function (results) {
+			var res = [];
+			res = res.concat.apply(res, results);
+			if (!~res.indexOf(true)) {
+				return;
+			}
+			$scope.pageReload();
+		});
 	};
 	$scope.$on('hidden', $scope.unselected);
 	$scope.$on('hidden',$.contextMenus.removeAll);
@@ -129,30 +148,45 @@ function autoResponder_forwarder ($scope) {
 			});
 		});
 	};
+	$scope.saveFile = function (file) {
+		$scope.rules.some(function (rule) {
+			var enable = rule.saveData;
+			enable = enable || rule.isEnabled('responseRequest');
+			enable = enable || rule.autoSaveEnable();
+			if (!enable) {
+				return false;
+			}
+			return rule.isMatch(file.path, function (match) {
+				rule
+					.saveData(file.data, match)
+					.next(cmd.sendMessage.bind(cmd, 'saveFile'))
+				;
+			});
+		});
+	}
 	$scope.commandConnect = function (forwarder) {
 		var fwd = forwarder;
 		fwd.stop();
 		var cmd = new ResponseCommand();
-		cmd.addListener('save', function (file) {
-			$scope.rules.some(function (rule) {
-				var enable = rule.saveData;
-				enable = enable || rule.isEnabled('responseRequest');
-				enable = enable || rule.autoSaveEnable();
-				if (!enable) {
-					return false;
-				}
-				return rule.isMatch(file.path, function (match) {
-					rule.saveData(file.data, match).next(cmd.sendMessage.bind(cmd, 'saveFile'));
-				});
-			});
-		}.bind(this));
-		$scope.$emit('commandOpen');
+		cmd.addListener('save', $scope.saveFile);
+		$scope.$emit('commandOpen', cmd);
 		cmd.addListener('close' , function () {
-			$scope.$emit('commandClose');
+			$scope.$emit('commandClose', cmd);
 		});
 		cmd.response(fwd)
 			.next(fwd.setResponse.bind(fwd))
 			.next(fwd.browserWrite.bind(fwd, cmd.connect.bind(cmd, fwd)))
 		;
 	};
+	$scope.pageReload = function () {
+		$scope.commands.forEach(function (cmd) {
+			cmd.sendCommand('pageReload');
+		});
+	};
+	$scope.$on('commandOpen', function (evn, cmd) {
+		$scope.commands.push(cmd);
+	});
+	$scope.$on('commandClose', function (evn, cmd) {
+		$scope.commands.splice($scope.commands.indexOf(cmd), 1);
+	});
 }

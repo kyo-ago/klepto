@@ -78,10 +78,16 @@
 			}
 		}.bind(this));
 	};
-	prop.sendMessage = function (message) {
+	prop.sendMessage = function (text) {
 		this.ws.sendText(JSON.stringify({
 			'type' : 'message',
-			'message' : message
+			'message' : text
+		}));
+	};
+	prop.sendCommand = function (text) {
+		this.ws.sendText(JSON.stringify({
+			'type' : 'command',
+			'command' : text
 		}));
 	};
 

@@ -21,7 +21,7 @@
 	};
 	prop.replaceContent = function () {};
 	prop.copy = function (instance) {
-		['enable', 'matcher', 'filter', 'entry'].forEach(function (key) {
+		['enable', 'matcher', 'filter', 'entry', 'autoSave', 'autoReload'].forEach(function (key) {
 			this[key] = this[key] || instance[key];
 		}.bind(this));
 		return this;

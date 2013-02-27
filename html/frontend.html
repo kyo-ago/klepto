@@ -45,7 +45,14 @@
 <div ng-show="selectForm=='ruleTable'" id="rulesTable">
 <table ng-init="rulesTable=true" ng-show="rules.length">
 <thead>
-<tr><th>enable</th><th>matr url</th><th>file name</th><th>auto save</th><th>del</th></tr>
+<tr>
+	<th>enable</th>
+	<th>matr url</th>
+	<th>file name</th>
+	<th>auto save</th>
+	<th>auto reload</th>
+	<th>del</th>
+</tr>
 </thead>
 <tbody>
 <tr draggable="true" ng-repeat="rule in rules"
@@ -55,6 +62,7 @@
 <td><input type="text" ng-model="rule.matcher" ng-click="$event.stopPropagation()"></td>
 <td>{{rule.path}}</td>
 <td><input type="checkbox" ng-model="rule.autoSave" ng-click="$event.stopPropagation()"></td>
+<td><input type="checkbox" ng-model="rule.autoReload" ng-click="$event.stopPropagation()"></td>
 <td><input type="submit" value="del" ng-click="deleteRule(rule)"></td>
 </tr>
 </tbody>

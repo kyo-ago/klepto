@@ -31,6 +31,8 @@
 	};
 	prop.load = function () {};
 	prop.isMatch = function () {};
+	prop.refresh = function (callback) { callback.call(this); }
+
 	prop.saveData = function (data, entry) {
 		var defer = Deferred();
 
@@ -78,7 +80,11 @@
 		this.entry = entry;
 		this.matcher = entry.name;
 		this.path = entry.fullPath;
-		Deferred.next(defer.call.bind(defer, this));
+		filesystem.getFile(this.entry).next(function (file) {
+			this.file = file;
+			this.lastModifiedDate = +this.file.lastModifiedDate;
+			defer.call(this);
+		}.bind(this));
 		return defer;
 	};
 	prop.isMatch = function (path, callback) {
@@ -87,6 +93,14 @@
 			return true;
 		}
 		return false;
+	};
+	prop.checkUpdate = function (callback) {
+		filesystem.getFile(this.entry).next(function (file) {
+			this.file = file;
+			var result = this.lastModifiedDate !== +this.file.lastModifiedDate;
+			this.lastModifiedDate = +this.file.lastModifiedDate;
+			callback(result);
+		}.bind(this));
 	};
 
 	exports[Klass.name] = Klass;
@@ -109,17 +123,47 @@
 		this.path = this.matcher = entry.fullPath;
 
 		var defer = Deferred();
-		this.setMap(defer.call.bind(defer, this));
+		this.setMap()
+			.next(this.setLastModifieds.bind(this))
+			.next(defer.call.bind(defer, this))
+		;
 		return defer;
 	};
-	prop.refresh = function () {
-		this.setMap();
+	prop.refresh = function (callback) {
+		this.setMap().next(callback.bind(this));
 	};
-	prop.setMap = function (callback) {
+	prop.setMap = function () {
+		var defer = Deferred();
 		filesystem.getDirMap(this.entry).next(function (map) {
 			this.map = map;
-			callback && callback();
+			defer.call(this);
 		}.bind(this));
+		return defer;
+	};
+	prop.setLastModifieds = function () {
+		var defer = Deferred();
+		var new_map = {};
+		var old_map = this.lastModifieds;
+		Deferred.parallel(Object.keys(this.map).filter(function (key) {
+			return this.map[key].isFile;
+		}.bind(this)).map(function (key) {
+			var defer = Deferred();
+			var entry = this.map[key];
+			filesystem.getFile(entry).next(function (file) {
+				defer.call({
+					'file' : file,
+					'entry' : entry
+				});
+			});
+			return defer;
+		}.bind(this))).next(function (results) {
+			var res = results.map(function (res) {
+				new_map[res.entry.fullPath] = +res.file.lastModifiedDate;
+				return new_map[res.entry.fullPath] === old_map[res.entry.fullPath];
+			});
+			defer.call(res);
+		}.bind(this));
+		return defer;
 	};
 	prop.isMatch = function (path, callback) {
 		if (!path.match(this.matcher)) {
@@ -137,6 +181,7 @@
 			return false;
 		}.bind(this));
 	};
+
 
 	exports[Klass.name] = Klass;
 })(this);
