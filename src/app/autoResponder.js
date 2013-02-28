@@ -6,7 +6,7 @@
 
 var autoResponder = function ($scope) {
 	$scope.rules = $scope.rules || [];
-	$scope.commands = [];
+	$scope.commands = undefined;
 	$scope.refresh_interval = 5000;
 	appEvents.addListener('backgroundLoad', function (key, rules) {
 		if (key !== 'autoResponderRules') {
@@ -179,14 +179,11 @@ function autoResponder_forwarder ($scope) {
 		;
 	};
 	$scope.pageReload = function () {
-		$scope.commands.forEach(function (cmd) {
-			cmd.sendCommand('pageReload');
-		});
+		$scope.commands.sendCommand('pageReload');
 	};
 	$scope.$on('commandOpen', function (evn, cmd) {
-		$scope.commands.push(cmd);
+		$scope.commands = cmd;
 	});
 	$scope.$on('commandClose', function (evn, cmd) {
-		$scope.commands.splice($scope.commands.indexOf(cmd), 1);
 	});
 }
