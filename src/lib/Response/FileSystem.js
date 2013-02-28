@@ -36,14 +36,10 @@
 	prop.saveData = function (data, entry) {
 		var defer = Deferred();
 
-		var message = {
-			'message' : 'replaceContent',
-			'fullPath' : entry.fullPath
-		};
 		chrome.fileSystem.getWritableEntry(entry, function (entry) {
 			entry.createWriter(function (writer) {
 				writer.onwriteend = function () {
-					writer.onwriteend = defer.call.bind(defer, message);
+					writer.onwriteend = defer.call.bind(defer, 'saveSuccess');
 					writer.truncate(data.length);
 				};
 				writer.write(new Blob([data], {
@@ -70,6 +66,7 @@
 	var Klass = function ResponseFile () {
 		this.type = 'responseRequest';
 		this.enable = true;
+		this.autoReload = true;
 	};
 	Klass.inherit(ResponseFilesyStem);
 	var prop = Klass.prototype;
@@ -112,6 +109,7 @@
 	var Klass = function ResponseDirectory () {
 		this.type = 'responseRequest';
 		this.enable = true;
+		this.autoReload = true;
 		this.map = {};
 	};
 	Klass.inherit(ResponseFilesyStem);

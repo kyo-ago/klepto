@@ -159,7 +159,7 @@ function autoResponder_forwarder ($scope) {
 			return rule.isMatch(file.path, function (match) {
 				rule
 					.saveData(file.data, match)
-					.next(cmd.sendMessage.bind(cmd, 'saveFile'))
+					.next(cmd.sendCommand.bind(cmd, 'saveFile'))
 				;
 			});
 		});
