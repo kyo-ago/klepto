@@ -16,6 +16,8 @@ Using
  * Go to Chrome new tab page, click Klepto app icon.
  * Drag & Drop local file to Klepto window.
 
+[japanese document](http://kyo-ago.github.com/klepto/)
+
 License
 -------
 
