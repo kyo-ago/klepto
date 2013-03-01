@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Klepto by kyo-ago</title>
+    <title>Klepto proxy by kyo-ago</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -17,7 +17,7 @@
   <body>
 
       <header>
-        <h1>Klepto</h1>
+        <h1>Klepto proxy</h1>
         <p>Local proxy on Chrome apps</p>
       </header>
 
@@ -39,32 +39,79 @@
         <ul></ul>
       </nav>
       <section>
-        <h3>Welcome to GitHub Pages.</h3>
+        <h3>Kleptoとは？</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>
+JavaScript, CSSの開発者向けのLocal Proxyです。
+</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+        <h3>何ができるの？</h3>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>
+現在以下の機能が実装されています。
+<ul>
+<li>通信内容の閲覧（network list）</li>
+<li>通信内容の差し替え（auto responder）</li>
+<li>Chrome developer tools上で書き換えた内容のローカルファイルへの反映（auto save）</li>
+<li>ローカルファイルが更新された場合にブラウザをリロード（auto reload）</li>
+</ul>
+（注　現在Windows環境では「通信内容の閲覧」と「通信内容の差し替え」が正しく行えません）
+</p>
 
-<h3>Designer Templates</h3>
+        <h3>動作環境</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>
+MacOSX版Chrome version 25以上（2013/03/01の安定版最新）
+</p>
+<p>
+現在Windows環境では「network list」と「auto responder」が動作しません（1ページ通信するとそれ以上通信できなくなる）<br>
+「auto save」と「auto reload」は動作するので、「network list」と「auto responder」を行いたい場合<a href="http://www.fiddler2.com/fiddler2/" target="_blank">Fiddler Web Debugger</a>をおすすめします。
+</p>
 
-<h3>Rather Drive Stick?</h3>
+        <h3>使い方</h3>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>
+<ul>
+<li><a href="https://chrome.google.com/webstore/detail/klepto-proxy/ldjiglaablmjadhcnmocnccmocibmokp" target="_blank">Klepto proxy（Chrome ウェブストア）</a>をインストール</li>
+<li><a href="https://chrome.google.com/webstore/detail/klepto-extension/emkledinokolepadojgcekkigimhockg" target="_blank">Klepto-extension（Chrome ウェブストア）</a>をインストール</li>
+<li>Chromeの新規タブから「Klepto proxy」を起動</li>
+<li>起動したKlepto proxy windowにファイル、ディレクトリをD&Dで渡す</li>
+<li>D&Dで渡したローカルファイルをエディタ等で編集</li>
+<li>Chrome developer toolsのSourcesタブでD&Dで渡したファイルを編集</li>
+</ul>
+</p>
 
-<h3>Authors and Contributors</h3>
+        <h3>制限事項</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>
+<ul>
+<li>動作はそこそこ遅いです</li>
+<li>SSLページは差し替えられません</li>
+<li>auto reloadは「今開いてるタブをリロードする」だけです。編集したファイルを読み込んでいるかどうかの確認は行なっていません</li>
+<li>auto reloadは5秒毎に更新時間を確認しています。リロードは最大5秒遅延します</li>
+<li>現状Kleptoのwindowを開いている場合のみ動作します（修正予定）</li>
+<li>ブラウザが終了するとauto responderの設定が消えます（仕様的にどうしようもないと思う）</li>
+</ul>
+</p>
 
-<h3>Support or Contact</h3>
+        <h3>内部実装</h3>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we窶冤l help you sort it out.</p>
+<p>
+network list、auto responderはKlepto proxy(Chrome apps)上にsocket APIを使ってHTTP Proxyを構築し通信を中継しています。
+</p>
+<p>
+auto save、auto reloadはKlepto proxy(Chrome apps)上にWebSocketサーバを構築し、Klepto extension(Chrome extension)からWebSocketで接続してコマンドのやり取りを行なっています。<br>
+（WebSocketサーバはOrignヘッダを確認しているので、Klepto extension以外からのWebSocket通信は受け取りません）
+</p>
+
+        <h3>ライセンス</h3>
+
+<p>
+@license Klepto proxy<br>
+Copyright (C) 2013 <a href="https://twitter.com/kyo_ago" target="_blank">@kyo_ago</a> <a href="https://github.com/kyo-ago/klepto" target="_blank">kyo-ago/klepto GitHub</a><br>
+License: GPL<br>
+</p>
+
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/kyo-ago">kyo-ago</a></p>
