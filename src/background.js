@@ -6,6 +6,11 @@
 
 'use strict';
 
+Deferred.onerror = function (e) {
+	console.debug([e], e.stack);
+};
+
+var global = this;
 var frontend;
 var saveData = {};
 var onLaunched = function () {
@@ -50,7 +55,7 @@ var onLaunched = function () {
 		}, 500);
 		var dom_interval = setInterval(function () {
 			var win = frontend.contentWindow;
-			if (!win.windowClose) {
+			if (!win.appEvents) {
 				return;
 			}
 			win.appEvents.addListener('windowReload', function () {
@@ -64,11 +69,48 @@ var onLaunched = function () {
 				Object.keys(saveData).forEach(function (key) {
 					win.appEvents.emitEvent('backgroundLoad', [key, saveData[key]]);
 				});
+				frontend.show();
 			});
-			sockets = win.SocketTable.sockets;
-			frontend.show();
 			clearInterval(dom_interval);
 		});
 	});
 };
 chrome.app.runtime.onLaunched.addListener(onLaunched);
+
+global.networkStart = function () {
+	Deferred.next(function () {
+		var defer = Deferred();
+		chrome.storage.local.get(defer.call.bind(defer));
+		return defer;
+	}).next(function (storage) {
+		global.storage = storage;
+		global.listener = new Listener({
+			'address' : storage.settings.address || '127.0.0.1',
+			'port' : (storage.settings.port - 0) || 8888
+		});
+		global.listener.addListener('startForwarder', function (forwarder) {
+			forwarder
+				.addListener('browserRead', frontendListener.bind(this, 'forwarder_browserRead'))
+				.addListener('userFilter', frontendListener.bind(this, 'forwarder_userFilter'))
+				.addListener('done', frontendListener.bind(this, 'forwarder_done'))
+			;
+			function frontendListener (name) {
+				if (!frontend) {
+					return;
+				}
+				frontend.contentWindow.appEvents.emitEvent(name, [forwarder]);
+			}
+		}).addListener('portblocking', function () {
+			if (!frontend) {
+				return;
+			}
+			frontend.contentWindow.appEvents.emitEvent('listener_portblocking', [global.listener]);
+		}).start();
+	});
+};
+global.networkRestart = function () {
+	global.listener.stop();
+	SocketTable.allDestroy();
+	networkStart();
+};
+global.networkStart();

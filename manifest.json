@@ -10,6 +10,20 @@
 	"app": {
 		"background": {
 			"scripts": [
+				"/lib/heir.js",
+				"/lib/EventEmitter.js",
+				"/lib/micro-location.js",
+				"/lib/jsdeferred.js",
+				"/src/lib/utils.js",
+				"/src/lib/Response.js",
+				"/src/lib/Response/FileSystem.js",
+				"/src/lib/Response/Text.js",
+				"/src/proxy/SocketTable.js",
+				"/src/proxy/Header.js",
+				"/src/proxy/Http.js",
+				"/src/proxy/Waterfall.js",
+				"/src/proxy/Forwarder.js",
+				"/src/proxy/Listener.js",
 				"/src/background.js"
 			]
 		}

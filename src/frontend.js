@@ -8,16 +8,25 @@
 
 var appEvents = new EventEmitter();
 var sandbox = $('#sandbox').get(0);
+var background;
 Deferred.onerror = function (e) {
 	console.debug([e], e.stack);
 };
 jQuery.event.props.push('dataTransfer');
 var filesystem = new FileSystem();
 
-Deferred.parallel(
-	[function () {
+Deferred.parallel([
+	function () {
 		var defer = Deferred();
 		Deferred.next($.bind($, defer.call.bind(defer)));
+		return defer;
+	},
+	function () {
+		var defer = Deferred();
+		chrome.runtime.getBackgroundPage(function (bg) {
+			background = bg;
+			defer.call();
+		});
 		return defer;
 	},
 	utils.loadStorage.bind(utils),
@@ -29,7 +38,6 @@ Deferred.parallel(
 		appInitialize
 	]);
 }).next(function () {
-	window.windowClose = SocketTable.allDestroy.bind(SocketTable);
 	appEvents.emitEvent('init');
 	var addListener = appEvents.addListener;
 	appEvents.addListener = function (evt, listener) {
@@ -68,28 +76,18 @@ function appInitialize () {
 		});
 	});
 	$body.networkStart = function () {
-		$body.listener = new Listener({
-			'address' : utils.storage.settings.address || '0.0.0.0',
-			'port' : (utils.storage.settings.port - 0) || 24888
-		});
-		$body.listener.addListener('startForwarder', function (forwarder) {
-			forwarder.addListener('browserRead', function () {
-				$autoResponder.responseRequest(this);
-			}.bind(forwarder)).addListener('userFilter', function () {
-				$autoResponder.userFilter(this);
-			}.bind(forwarder)).addListener('done', function () {
-				$networkList.addLog(this);
-			}.bind(forwarder));
-		}).addListener('portblocking', function () {
+		appEvents.addListener('listener_portblocking', function (forwarder) {
 			$settings.portblocking();
 			$body.$apply('selectTab="settingsTab"')
-		}).start();
+		}).addListener('forwarder_browserRead', function (forwarder) {
+			$autoResponder.responseRequest(forwarder);
+		}).addListener('forwarder_userFilter', function (forwarder) {
+			$autoResponder.userFilter(forwarder);
+		}).addListener('forwarder_done', function (forwarder) {
+			$networkList.addLog(forwarder);
+		});
 	};
-	$body.networkRestart = function () {
-		$body.listener.stop();
-		SocketTable.allDestroy();
-		$body.networkStart();
-	};
+	$body.networkRestart = background.networkRestart;
 	$body.networkStart();
 
 	$('#autoResponderTab table').tableSorter({
