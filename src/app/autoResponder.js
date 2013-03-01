@@ -5,6 +5,8 @@
  */
 
 var autoResponder = function ($scope) {
+	'use strict';
+
 	$scope.rules = $scope.rules || [];
 	$scope.commands = undefined;
 	$scope.refresh_interval = 5000;
@@ -25,6 +27,8 @@ var autoResponder = function ($scope) {
 };
 
 function autoResponder_ui ($scope) {
+	'use strict';
+
 	$scope.selectRule = function (target) {
 		$scope.rules.forEach(function (rule) {
 			rule.selected = target === rule;
@@ -122,6 +126,8 @@ function autoResponder_ui ($scope) {
 	};
 }
 function autoResponder_forwarder ($scope) {
+	'use strict';
+
 	$scope.responseRequest = function (forwarder) {
 		var fwd = forwarder;
 		if (!ResponseCommand.isMatch(fwd)) {

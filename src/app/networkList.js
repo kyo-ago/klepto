@@ -5,6 +5,8 @@
  */
 
 var networkList = function ($scope) {
+	'use strict';
+
 	$scope.log = {};
 	$scope.logs = [];
 	$scope.contextmenu_id = [];

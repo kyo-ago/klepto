@@ -4,15 +4,13 @@
  * License: GPL
  */
 
-'use strict';
-
+var global = this;
 Deferred.onerror = function (e) {
 	console.debug([e], e.stack);
 };
-
-var global = this;
 var frontend;
 var saveData = {};
+
 var onLaunched = function () {
 	if (frontend) {
 		frontend.focus();

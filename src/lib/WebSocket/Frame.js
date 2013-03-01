@@ -9,8 +9,6 @@
  * License: GPL
  */
 
-'use strict';
-
 (function (exports) {
 	'use strict';
 

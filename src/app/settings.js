@@ -5,6 +5,8 @@
  */
 
 var settings = function ($scope) {
+	'use strict';
+
 	appEvents.addListener('init', function () {
 		$scope.$apply(function () {
 			var stor = utils.storage.settings;
