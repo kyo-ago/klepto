@@ -39,72 +39,72 @@
         <ul></ul>
       </nav>
       <section>
-        <h3>Klepto�Ƃ́H</h3>
+        <h3>Kleptoとは？</h3>
 
 <p>
-JavaScript, CSS�̊J���Ҍ�����Local Proxy�ł��B
+JavaScript, CSSの開発者向けのLocal Proxyです。
 </p>
 
-        <h3>�����ł���́H</h3>
+        <h3>何ができるの？</h3>
 
 <p>
-���݈ȉ��̋@�\����������Ă��܂��B
+現在以下の機能が実装されています。
 <ul>
-<li>�ʐM���e�̉{���inetwork list�j</li>
-<li>�ʐM���e�̍����ւ��iauto responder�j</li>
-<li>Chrome developer tools��ŏ������������e�̃��[�J���t�@�C���ւ̔��f�iauto save�j</li>
-<li>���[�J���t�@�C�����X�V���ꂽ�ꍇ�Ƀu���E�U�������[�h�iauto reload�j</li>
+<li>通信内容の閲覧（network list）</li>
+<li>通信内容の差し替え（auto responder）</li>
+<li>Chrome developer tools上で書き換えた内容のローカルファイルへの反映（auto save）</li>
+<li>ローカルファイルが更新された場合にブラウザをリロード（auto reload）</li>
 </ul>
-�i���@����Windows���ł́u�ʐM���e�̉{���v�Ɓu�ʐM���e�̍����ւ��v���������s���܂���j
+（注　現在Windows環境では「通信内容の閲覧」と「通信内容の差し替え」が正しく行えません）
 </p>
 
-        <h3>�����</h3>
+        <h3>動作環境</h3>
 
 <p>
-MacOSX��Chrome version 25�ȏ�i2013/03/01�̈���ōŐV�j
+MacOSX版Chrome version 25以上（2013/03/01の安定版最新）
 </p>
 <p>
-����Windows���ł́unetwork list�v�Ɓuauto responder�v�����삵�܂���i1�y�[�W�ʐM����Ƃ���ȏ�ʐM�ł��Ȃ��Ȃ�j<br>
-�uauto save�v�Ɓuauto reload�v�͓��삷��̂ŁA�unetwork list�v�Ɓuauto responder�v���s�������ꍇ<a href="http://www.fiddler2.com/fiddler2/" target="_blank">Fiddler Web Debugger</a>���������߂��܂��B
+現在Windows環境では「network list」と「auto responder」が動作しません（1ページ通信するとそれ以上通信できなくなる）<br>
+「auto save」と「auto reload」は動作するので、「network list」と「auto responder」を行いたい場合<a href="http://www.fiddler2.com/fiddler2/" target="_blank">Fiddler Web Debugger</a>をおすすめします。
 </p>
 
-        <h3>�g����</h3>
-
-<p>
-<ul>
-<li><a href="https://chrome.google.com/webstore/detail/klepto-proxy/ldjiglaablmjadhcnmocnccmocibmokp" target="_blank">Klepto proxy�iChrome �E�F�u�X�g�A�j</a>���C���X�g�[��</li>
-<li><a href="https://chrome.google.com/webstore/detail/klepto-extension/emkledinokolepadojgcekkigimhockg" target="_blank">Klepto-extension�iChrome �E�F�u�X�g�A�j</a>���C���X�g�[��</li>
-<li>Chrome�̐V�K�^�u����uKlepto proxy�v���N��</li>
-<li>�N������Klepto proxy window�Ƀt�@�C���A�f�B���N�g����D&D�œn��</li>
-<li>D&D�œn�������[�J���t�@�C�����G�f�B�^���ŕҏW</li>
-<li>Chrome developer tools��Sources�^�u��D&D�œn�����t�@�C����ҏW</li>
-</ul>
-</p>
-
-        <h3>��������</h3>
+        <h3>使い方</h3>
 
 <p>
 <ul>
-<li>����͂��������x���ł�</li>
-<li>SSL�y�[�W�͍����ւ����܂���</li>
-<li>auto reload�́u���J���Ă�^�u�������[�h����v�����ł��B�ҏW�����t�@�C����ǂݍ���ł��邩�ǂ����̊m�F�͍s�Ȃ��Ă��܂���</li>
-<li>auto reload��5�b���ɍX�V���Ԃ��m�F���Ă��܂��B�����[�h�͍ő�5�b�x�����܂�</li>
-<li>����Klepto��window���J���Ă���ꍇ�̂ݓ��삵�܂��i�C���\��j</li>
-<li>�u���E�U���I�������auto responder�̐ݒ肪�����܂��i�d�l�I�ɂǂ����悤���Ȃ��Ǝv���j</li>
+<li><a href="https://chrome.google.com/webstore/detail/klepto-proxy/ldjiglaablmjadhcnmocnccmocibmokp" target="_blank">Klepto proxy（Chrome ウェブストア）</a>をインストール</li>
+<li><a href="https://chrome.google.com/webstore/detail/klepto-extension/emkledinokolepadojgcekkigimhockg" target="_blank">Klepto-extension（Chrome ウェブストア）</a>をインストール</li>
+<li>Chromeの新規タブから「Klepto proxy」を起動</li>
+<li>起動したKlepto proxy windowにファイル、ディレクトリをD&Dで渡す</li>
+<li>D&Dで渡したローカルファイルをエディタ等で編集</li>
+<li>Chrome developer toolsのSourcesタブでD&Dで渡したファイルを編集</li>
 </ul>
 </p>
 
-        <h3>��������</h3>
+        <h3>制限事項</h3>
 
 <p>
-network list�Aauto responder��Klepto proxy(Chrome apps)���socket API���g����HTTP Proxy���\�z���ʐM�𒆌p���Ă��܂��B
-</p>
-<p>
-auto save�Aauto reload��Klepto proxy(Chrome apps)���WebSocket�T�[�o���\�z���AKlepto extension(Chrome extension)����WebSocket�Őڑ����ăR�}���h�̂������s�Ȃ��Ă��܂��B<br>
-�iWebSocket�T�[�o��Orign�w�b�_���m�F���Ă���̂ŁAKlepto extension�ȊO�����WebSocket�ʐM�͎󂯎��܂���j
+<ul>
+<li>動作はそこそこ遅いです</li>
+<li>SSLページは差し替えられません</li>
+<li>auto reloadは「今開いてるタブをリロードする」だけです。編集したファイルを読み込んでいるかどうかの確認は行なっていません</li>
+<li>auto reloadは5秒毎に更新時間を確認しています。リロードは最大5秒遅延します</li>
+<li>現状Kleptoのwindowを開いている場合のみ動作します（修正予定）</li>
+<li>ブラウザが終了するとauto responderの設定が消えます（仕様的にどうしようもないと思う）</li>
+</ul>
 </p>
 
-        <h3>���C�Z���X</h3>
+        <h3>内部実装</h3>
+
+<p>
+network list、auto responderはKlepto proxy(Chrome apps)上にsocket APIを使ってHTTP Proxyを構築し通信を中継しています。
+</p>
+<p>
+auto save、auto reloadはKlepto proxy(Chrome apps)上にWebSocketサーバを構築し、Klepto extension(Chrome extension)からWebSocketで接続してコマンドのやり取りを行なっています。<br>
+（WebSocketサーバはOrignヘッダを確認しているので、Klepto extension以外からのWebSocket通信は受け取りません）
+</p>
+
+        <h3>ライセンス</h3>
 
 <p>
 @license Klepto proxy<br>
