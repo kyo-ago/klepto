@@ -81,10 +81,11 @@ global.networkStart = function () {
 		chrome.storage.local.get(defer.call.bind(defer));
 		return defer;
 	}).next(function (storage) {
-		global.storage = storage;
+		global.storage = storage || {'settings' : {}};
+		global.storage.settings = global.storage.settings || {};
 		global.listener = new Listener({
-			'address' : storage.settings.address || '127.0.0.1',
-			'port' : (storage.settings.port - 0) || 8888
+			'address' : global.storage.settings.address || '127.0.0.1',
+			'port' : (global.storage.settings.port - 0) || 8888
 		});
 		global.listener.addListener('startForwarder', function (forwarder) {
 			forwarder
