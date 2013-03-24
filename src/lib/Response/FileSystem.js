@@ -29,7 +29,7 @@
 	};
 	prop.load = function () {};
 	prop.isMatch = function () {};
-	prop.refresh = function (callback) { callback.call(this); }
+	prop.refresh = function () {};
 
 	prop.saveData = function (data, entry) {
 		var defer = Deferred();
@@ -89,6 +89,7 @@
 		}
 		return false;
 	};
+	prop.refresh = function (callback) { callback.call(this); };
 	prop.checkUpdate = function (callback) {
 		filesystem.getFile(this.entry).next(function (file) {
 			this.file = file;
@@ -109,6 +110,7 @@
 		this.enable = true;
 		this.autoReload = true;
 		this.map = {};
+		this.lastModifieds = {};
 	};
 	Klass.inherit(ResponseFilesyStem);
 	var prop = Klass.prototype;
@@ -127,6 +129,9 @@
 	};
 	prop.refresh = function (callback) {
 		this.setMap().next(callback.bind(this));
+	};
+	prop.checkUpdate = function (callback) {
+		this.setLastModifieds().next(callback)
 	};
 	prop.setMap = function () {
 		var defer = Deferred();
