@@ -26,14 +26,14 @@ var onLaunched = function () {
 	}, function(win) {
 		frontend = win;
 		/* This code does not work.
-		 frontend.onClosed.addListener(function () {
-		 frontend.contentWindow.windowClose();
-		 frontend = undefined;
-		 });
-		 frontend.contentWindow.document.addEventListenr('DOMContentLoaded', function () {
-		 frontend.focus();
-		 frontend.show();
-		 });
+			frontend.onClosed.addListener(function () {
+				frontend.contentWindow.windowClose();
+				frontend = undefined;
+			});
+			frontend.contentWindow.document.addEventListenr('DOMContentLoaded', function () {
+				frontend.focus();
+				frontend.show();
+			});
 		 */
 		var sockets = {};
 		var win_interval = setInterval(function () {

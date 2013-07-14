@@ -7,14 +7,28 @@
 var autoResponder = function ($scope) {
 	'use strict';
 
-	$scope.rules = $scope.rules || [];
+	$scope.rules = $scope.rules || [
+	/*
+		{
+			'path' : String,
+			'matcher' : String,
+			'lastModifiedDate' : Number,
+			'entry' : FileEntry,
+			'entryId' : String,
+			'file' : File,
+			'type' : 'ResponseTemplate' || 'ResponseFilter' || 'ResponseFile' || 'ResponseDirectory',
+			'autoReload' : Boolean,
+			'enable' : Boolean
+		}
+	*/
+	];
 	$scope.commands = undefined;
 	$scope.refresh_interval = 5000;
 	appEvents.addListener('backgroundLoad', function (key, rules) {
 		if (key !== 'autoResponderRules') {
 			return;
 		}
-		Deferred.parallel(rules.map(function (rule) {
+		Deferred.parallel((rules || []).map(function (rule) {
 			var isDir = rule.constructor.name === ResponseDirectory.name;
 			var klass = isDir ? ResponseDirectory : ResponseFile;
 			var instance = new klass(rule.entry);

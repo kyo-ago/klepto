@@ -17,7 +17,6 @@
 	prop.methods = [];
 	prop.start = function () {
 		this.addListener('error', function (error) {
-			console.debug(arguments);
 			this.sockets.removeAll();
 			throw new Error(error);
 		}.bind(this));
